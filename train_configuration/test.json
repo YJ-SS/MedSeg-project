@@ -1,0 +1,27 @@
+{
+  "model_config": {
+    "model_name" : "dual_MBConv_VAE",
+    "in_channel" : 1,
+    "num_class" : 6,
+    "residual" : true,
+    "device" : "cuda",
+    "channel_list": [16, 32, 64, 128]
+  },
+  "hyper_para":{
+    "epoch": 200,
+    "decay": 1e-8,
+    "label_mapping": true,
+    "label_discard_list": [],
+    "label_merge_list": [],
+    "lr" : 1e-4,
+    "cutmix" : true,
+    "save_checkpoint_per_epoch": 5,
+    "patience": 30,
+    "recon_img_get_num": null
+  },
+  "training_info_config": {
+    "log_save_path": "",
+    "model_para_save_path": ""
+
+  }
+}
