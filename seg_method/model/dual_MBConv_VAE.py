@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 from typing import Tuple, Any, List
 import torch
 import torch.nn as nn

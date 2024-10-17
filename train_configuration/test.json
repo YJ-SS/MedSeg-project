@@ -4,6 +4,7 @@
     "in_channel" : 1,
     "num_class" : 6,
     "residual" : true,
+    "MBConv": true,
     "device" : "cuda",
     "channel_list": [16, 32, 64, 128]
   },
@@ -17,11 +18,15 @@
     "cutmix" : true,
     "save_checkpoint_per_epoch": 5,
     "patience": 30,
-    "recon_img_get_num": null
+    "recon_img_get_num": null,
+    "seg_weight": 1.0,
+    "recon_weight": 1e-2,
+    "kl_weight": 1e-4,
+    "contras_weight": 1e-4,
+    "region_retain_weight": 0.9
   },
   "training_info_config": {
     "log_save_path": "",
     "model_para_save_path": ""
-
   }
 }
