@@ -20,6 +20,7 @@ class SimpleTrainer(object):
             )
         elif self.model_name == "monai_3D_unet":
             pass
+
     def train_dual_MBConv_VAE_(self):
         pass
     def train(self):
