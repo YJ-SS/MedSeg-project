@@ -14,12 +14,12 @@ class MBConvNet(nn.Module):
             channel_list: List[int],
             residual: bool,
             MBConv: bool,
-            device: str
+            device: torch.device,
     ):
         super().__init__()
-        valid_devices = {'cuda', 'cpu'}
-        if device not in valid_devices:
-            raise ValueError(f"Invalid value for device. Expected one of {valid_devices}, but got {device}")
+        # valid_devices = {'cuda', 'cpu'}
+        # if device not in valid_devices:
+        #     raise ValueError(f"Invalid value for device. Expected one of {valid_devices}, but got {device}")
 
         self.residual = residual
         self.encode_blocks = []

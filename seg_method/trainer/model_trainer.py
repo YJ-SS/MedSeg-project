@@ -9,6 +9,8 @@ class SimpleTrainer(object):
         self.model_config = train_config['model_config']
         self.model_name = self.model_config['model_name']
         self.net = None
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(self.device)
         if self.model_name == "dual_MBConv_VAE":
             self.net = MBConvNet(
                 in_channel=self.model_config['in_channel'],
@@ -16,12 +18,14 @@ class SimpleTrainer(object):
                 residual=self.model_config['residual'],
                 channel_list=self.model_config['channel_list'],
                 MBConv=self.model_config['MBConv'],
-                device=self.model_config['device']
+                device=self.device
             )
         elif self.model_name == "monai_3D_unet":
             pass
 
     def train_dual_MBConv_VAE_(self):
+        x = torch.randn([2,1,32,32,32]).to(self.device)
+        print(self.net(x)[0].shape)
         pass
     def train(self):
         pass
@@ -32,4 +36,4 @@ class SimpleTrainer(object):
 
 
 Trainer = SimpleTrainer(config_path="../../train_configuration/test.json")
-Trainer.train()
+Trainer.train_dual_MBConv_VAE_()

@@ -5,7 +5,6 @@
     "num_class" : 6,
     "residual" : true,
     "MBConv": true,
-    "device" : "cuda",
     "channel_list": [16, 32, 64, 128]
   },
   "hyper_para":{
