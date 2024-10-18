@@ -1,13 +1,76 @@
+import sys
+sys.path.append("../seg_method/train_process")
 from numpy import random
 import SimpleITK as sitk
 import torch
-from monai.transforms import Resized, Compose, apply_transform, AddChannel, AddChanneld, EnsureChannelFirst, LoadImaged, Resize, \
-    ToTensor
+from monai.transforms import (Compose, Resized, Resize, apply_transform, ToTensord, ToTensor, AddChanneld, AddChannel,
+                              NormalizeIntensityd, CenterSpatialCropd,
+                              RandFlipd, GibbsNoise, RandRotate90d, RandRotated, RandZoomd, ThresholdIntensityd,
+                              ScaleIntensityRanged, ScaleIntensity,
+                              RandShiftIntensityd, RandAffined, Rand3DElasticd, RandGridDistortiond,
+                              RandSpatialCropSamplesd)
 from torchvision import transforms
 import os
 import numpy as np
 from tqdm import tqdm
+from train_process.log_func import log_print
 
+
+
+def get_dataloader_transform(stage, resize=None):
+    assert stage in ['supervise', 'unsupervise', 'validation'],\
+    log_print("ERROE", "Stage must in ['supervise', 'unsupervise', 'validation'], "
+                       "current stage: {0}".format(stage))
+    transform2both = None
+    transform2img = None
+    if stage == 'supervise':
+        transform2both_list = [
+            ToTensord(keys=['image', 'label']),
+            AddChanneld(keys=['image', 'label']),
+            RandRotated(keys=['image', 'label'], range_x=0.1, range_y=0.1, range_z=0.1, prob=0.5,
+                        mode=['bilinear', 'nearest']),
+            RandAffined(keys=['image', 'label'], prob=0.5, scale_range=[0.1, 0.3], mode=['bilinear', 'nearest'],
+                        padding_mode='zeros')
+        ]
+        transform2img_list = [
+        ScaleIntensity(minv=0., maxv=1.)
+        ]
+
+        if resize is not None:
+            transform2both_list.insert(
+                2,
+                Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
+            )
+        transform2both = Compose(transform2both_list)
+        transform2img = Compose(transform2img_list)
+
+    elif stage == 'unsupervise':
+        transform2img_list = [
+            ToTensor(),
+            AddChannel(),
+            ScaleIntensity(minv=0., maxv=1.)
+        ]
+        if resize is not None:
+            transform2img_list.insert(2, Resize(spatial_size=resize, mode='area'))
+        transform2img = Compose(transform2img_list)
+    elif stage == 'validation':
+        transform2img_list = [
+            ScaleIntensity(minv=0., maxv=1.)
+        ]
+        transform2both_list = [
+            ToTensord(keys=['image', 'label']),
+            AddChanneld(keys=['image', 'label']),
+
+        ]
+        if resize is not None:
+            transform2both_list.insert(
+                2,
+                Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
+            )
+        transform2img = Compose(transform2img_list)
+        transform2both = Compose(transform2both_list)
+
+    return transform2both, transform2img
 
 def mapping(label):
     '''

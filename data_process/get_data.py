@@ -2,6 +2,25 @@ import sys
 sys.path.append("../seg_method/train_process")
 import os
 from train_process.log_func import log_print
+
+
+def get_data_path_list(dataset_name, root_path, num_class):
+    img_path_list = None
+    label_path_list = None
+    if dataset_name == 'oasis':
+        assert (num_class == 4 or num_class == 35), \
+            log_print("ERROR",
+                      "Check training_info_config[dataset_num_class], oasis dataset only allows dataset_num_class to be"
+                      " 4 or 35")
+        img_path_list, label_path_list = get_oasis_MRI_path_list(
+            root_path=root_path,
+            num_class=num_class
+        )
+    elif dataset_name == 'cranial':
+        pass
+    return img_path_list, label_path_list
+
+
 def get_cranial_CT_path_list(root_path: str)->tuple[list[str], list[str]]:
     '''
     @param root_path:

@@ -11,8 +11,8 @@
     "epoch": 200,
     "decay": 1e-8,
     "label_mapping": true,
-    "label_discard_list": [],
-    "label_merge_list": [],
+    "label_discard_list": null,
+    "label_merge_list": null,
     "lr" : 1e-4,
     "cutmix" : true,
     "save_checkpoint_per_epoch": 5,
@@ -23,10 +23,13 @@
     "kl_weight": 1e-4,
     "contras_weight": 1e-4,
     "region_retain_weight": 0.9,
-    "resize": [256,256,256],
+    "resize": null,
     "sup_data_num": 2,
     "unsup_data_num": 128,
-    "val_data_num": 64
+    "val_data_num": 64,
+    "batch_size": 1,
+    "prefetch_factor": 2,
+    "num_workers": 2
 
   },
   "training_info_config": {
