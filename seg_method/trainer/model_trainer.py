@@ -149,7 +149,6 @@ class SimpleTrainer(object):
                 label = data1[0].to(self.device)
                 # Unsupervised data
                 img2 = data2[0].to(self.device)
-
             # Validation process
             log_print("CRITICAL", "Validation---")
 
