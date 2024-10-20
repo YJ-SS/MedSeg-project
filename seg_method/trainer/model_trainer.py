@@ -151,7 +151,6 @@ class SimpleTrainer(object):
                 img2 = data2[0].to(self.device)
             # Validation process
             log_print("CRITICAL", "Validation---")
-
         pass
     def train(self):
         pass
