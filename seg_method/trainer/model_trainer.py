@@ -152,7 +152,6 @@ class SimpleTrainer(object):
             # Validation process
             log_print("CRITICAL", "Validation---")
 
-
         pass
     def train(self):
         pass
