@@ -1,7 +1,11 @@
+import itertools
 import sys
 
+import numpy as np
+from torch import optim
 from torchio import Compose
 from tqdm import tqdm
+
 sys.path.append("../model")
 sys.path.append("../../data_process")
 sys.path.append("../train_process")
@@ -10,10 +14,14 @@ import json
 import torch
 from data_process.get_data import get_data_path_list
 from data_process.dataset import myDataSet
-from data_process.data_process_method import get_dataloader_transform
+from data_process.evalution import get_dice
+from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, get_sup_label_weights
 from train_process.log_func import log_print
+from train_process.loss import KL_divergence, self_contrastive_loss
 from torch.utils.data import DataLoader
+import SimpleITK as sitk
 import warnings
+import torch.nn as nn
 warnings.filterwarnings("ignore")
 
 
@@ -42,6 +50,34 @@ class SimpleTrainer(object):
         self.sup_dataloader = None
         self.unsup_dataloader = None
         self.val_dataloader = None
+        self.recon_region_weights = get_recon_region_weights(
+            data_resolution=self.hyper_para_config['data_resolution'],
+            resize=self.hyper_para_config['resize'],
+            device=self.device
+        )
+        log_print("INFO", "Reconstruction region weights initialized: {}".format(
+            self.recon_region_weights.shape
+        ))
+
+        # Get data path
+        self.img_path_list, self.label_path_list = get_data_path_list(
+            dataset_name=self.training_info_config['dataset_name'],
+            root_path=self.training_info_config['dataset_root_path'],
+            num_class=self.training_info_config['dataset_num_class'],
+        )
+
+        assert self.img_path_list is not None and self.label_path_list is not None,\
+        log_print("ERROR", "Check image path list and label path list, which is None!!!")
+        log_print("INFO", "Total image path list length: {0}".format(len(self.img_path_list)))
+        log_print("INFO", "Total label path list length: {0}".format(len(self.label_path_list)))
+
+        self.label_weights = get_sup_label_weights(
+            template_label_path=self.label_path_list[0],
+            map=self.hyper_para_config['label_mapping'],
+            discard=self.hyper_para_config['label_discard_list'],
+            merge=self.hyper_para_config['label_merge_list']
+
+        ).to(self.device)
 
         log_print("INFO", "Use device: {0}".format(self.device))
         # Build model
@@ -57,17 +93,6 @@ class SimpleTrainer(object):
         elif self.model_name == "monai_3D_unet":
             pass
 
-        # Get data path
-        self.img_path_list, self.label_path_list = get_data_path_list(
-            dataset_name=self.training_info_config['dataset_name'],
-            root_path=self.training_info_config['dataset_root_path'],
-            num_class=self.training_info_config['dataset_num_class'],
-        )
-
-        assert self.img_path_list is not None and self.label_path_list is not None,\
-        log_print("ERROR", "Check image path list and label path list, which is None!!!")
-        log_print("INFO", "Total image path list length: {0}".format(len(self.img_path_list)))
-        log_print("INFO", "Total label path list length: {0}".format(len(self.label_path_list)))
         # Build dataset
         # Build dataloader
         self.sup_dataloader = self.get_dataloader_(
@@ -76,6 +101,7 @@ class SimpleTrainer(object):
             stage="supervise"
         )
         log_print("INFO", "Supervised dataloader length: {0}".format(len(self.sup_dataloader)))
+        self.sup_dataloader = itertools.cycle(self.sup_dataloader)
 
         self.unsup_dataloader = self.get_dataloader_(
             img_path_list=self.img_path_list[: self.unsup_data_num],
@@ -140,18 +166,179 @@ class SimpleTrainer(object):
         return dataloader
 
     def train_dual_MBConv_VAE_(self):
+        train_total_loss = 0.
+        train_seg_loss = 0.
+        train_recon_loss = 0.
+        train_kl_loss = 0.
+        train_contras_loss = 0.
+        train_dice = 0.
+        train_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+        val_total_loss = 0.
+        val_seg_loss = 0.
+        val_recon_loss = 0.
+        val_kl_loss = 0.
+        val_contras_loss = 0.
+        val_dice = 0.
+        val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+        optimizer = optim.Adamax(
+            params=self.net.parameters(),
+            lr=self.hyper_para_config['lr'],
+            weight_decay=self.hyper_para_config['decay'],
+            eps=1e-7
+        )
+        scaler = torch.cuda.amp.GradScaler()
+
         for epoch in range(self.epoch):
             # Training process
             log_print("CRITICAL", "Training---")
+            self.net.train()
             for data1, data2 in tqdm(zip(self.sup_dataloader, self.unsup_dataloader), total=len(self.unsup_dataloader)):
                 # Supervised data
                 img1 = data1[0].to(self.device)
-                label = data1[0].to(self.device)
+                label = data1[1].to(self.device)
                 # Unsupervised data
                 img2 = data2[0].to(self.device)
+                with torch.amp.autocast(device_type=str(self.device), dtype=torch.float16):
+                    # Self supervised
+                    _, recon, mu, logvar, latent = self.net(img2)
+                    # Supervised
+                    pre_label, _, _, _, _ = self.net(img1)
+                    loss_dict = self.get_loss_dict_dual_VAE_(
+                        seg_img=img1,
+                        seg_gt=label,
+                        recon_img=img2,
+                        pre_label=pre_label,
+                        pre_recon=recon,
+                        mu=mu,
+                        logvar=logvar,
+                        latent_var=latent
+                    )
+                    total_loss = loss_dict['total_loss']
+                    seg_loss = loss_dict['seg_loss']
+                    recon_loss = loss_dict['recon_loss']
+                    kl_loss = loss_dict['kl_loss']
+                    contrastive_loss = loss_dict['contrastive_loss']
+
+                    train_total_loss += total_loss.item()
+                    train_seg_loss += seg_loss.item()
+                    train_recon_loss += recon_loss.item()
+                    train_kl_loss += kl_loss.item()
+                    train_contras_loss += contrastive_loss.item()
+
+                    dice_temp, dice_matrix_temp = get_dice(
+                        y_pred=pre_label,
+                        y_true=label,
+                        num_clus=self.model_config['num_class']
+                    )
+                    train_dice += dice_temp
+                    train_dice_matrix += dice_matrix_temp
+
+
+
+                optimizer.zero_grad()
+                scaler.scale(total_loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+
             # Validation process
             log_print("CRITICAL", "Validation---")
+            self.net.eval()
+            with torch.no_grad():
+                for img, label in tqdm(self.val_dataloader):
+                    img = img.to(self.device)
+                    label = label.to(self.device)
+                    pre_label, recon, mu, logvar, latent = self.net(img)
+                    loss_dict = self.get_loss_dict_dual_VAE_(
+                        seg_img=img,
+                        seg_gt=label,
+                        recon_img=img,
+                        pre_label=pre_label,
+                        pre_recon=recon,
+                        mu=mu,
+                        logvar=logvar,
+                        latent_var=latent
+                    )
+                    total_loss = loss_dict['total_loss']
+                    seg_loss = loss_dict['seg_loss']
+                    recon_loss = loss_dict['recon_loss']
+                    kl_loss = loss_dict['kl_loss']
+                    contrastive_loss = loss_dict['contrastive_loss']
+                    val_total_loss += total_loss.item()
+                    val_seg_loss += seg_loss.item()
+                    val_recon_loss += recon_loss.item()
+                    val_kl_loss += kl_loss.item()
+                    val_contras_loss += contrastive_loss.item()
+
+                    dice_temp, dice_matrix_temp = get_dice(
+                        y_pred=pre_label,
+                        y_true=label,
+                        num_clus=self.model_config['num_class']
+                    )
+                    val_dice += dice_temp
+                    val_dice_matrix += dice_matrix_temp
+
+            log_print(
+                "CRITICAL",
+                "EPOCH={0} train_seg_loss={1:.2f} train_recon_loss={2:.2f} train_KL_loss={3:.2f} "
+                "train_contras_loss={4:.2f} train_dice={5:.2f} "
+                "val_seg_loss={6:.2f} val_recon_loss={7:.2f} val_KL_loss={8:.2f} val_contras_loss={9:.2f} "
+                "val_dice={10:.2f}".format(
+                    epoch,
+                    train_seg_loss / len(self.unsup_dataloader),
+                    train_recon_loss / len(self.unsup_dataloader),
+                    train_kl_loss / len(self.unsup_dataloader),
+                    train_contras_loss / len(self.unsup_dataloader),
+                    train_dice / len(self.unsup_dataloader),
+                    val_seg_loss / len(self.val_dataloader),
+                    val_recon_loss / len(self.val_dataloader),
+                    val_kl_loss / len(self.val_dataloader),
+                    val_contras_loss / len(self.val_dataloader),
+                    val_dice / len(self.val_dataloader)
+
+                )
+            )
+            return
+
         pass
+
+    def get_loss_dict_dual_VAE_(self, seg_img, seg_gt, recon_img, pre_label, pre_recon, mu, logvar, latent_var):
+        '''
+        get loss dict when training dual VAE
+        :param seg_img:
+        :param seg_gt:
+        :param recon_img:
+        :param pre_label:
+        :param mu:
+        :param logvar:
+        :param latent_var:
+        :return:
+        '''
+        seg_loss_fn = nn.CrossEntropyLoss(weight=self.label_weights)
+        recon_loss_fn = nn.MSELoss(reduction='none')
+
+        seg_loss = seg_loss_fn(pre_label, seg_gt.squeeze(dim=1).long())
+        recon_loss = recon_loss_fn(recon_img, pre_recon)
+        recon_loss = (recon_loss * self.recon_region_weights).mean()
+        kl_loss = KL_divergence(mu=mu, logvar=logvar)
+        contrastive_loss = self_contrastive_loss(latent_var, avg_pool=True)
+        total_loss = seg_loss * self.hyper_para_config['seg_weight']\
+                    + recon_loss * self.hyper_para_config['recon_weight']\
+                    + kl_loss * self.hyper_para_config['kl_weight']\
+                    + contrastive_loss * self.hyper_para_config['contras_weight']
+
+        loss_dict = {
+            "total_loss": total_loss,
+            "seg_loss": seg_loss,
+            "recon_loss": recon_loss,
+            "kl_loss": kl_loss,
+            "contrastive_loss": contrastive_loss
+        }
+
+        return loss_dict
+
+
     def train(self):
         pass
     def evaluate(self):

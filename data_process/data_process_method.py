@@ -137,6 +137,35 @@ def label_mapping(label_img: np.array, discard: list, merge: list):
     # print('label list after discard and merge: ', new_labels)
     return label_img
 
+def get_recon_region_weights(data_resolution, resize, device):
+    recon_region_weights = None
+    if resize is not None:
+        recon_region_weights = torch.ones(resize)
+    else:
+        recon_region_weights = torch.ones(data_resolution)
+    assert recon_region_weights is not None, \
+        log_print("ERROR", "Initialize reconstruction region weights failed!!!")
+    recon_region_weights = recon_region_weights.unsqueeze(dim=0).unsqueeze(dim=0).to(device)
+
+    return recon_region_weights
+
+def get_sup_label_weights(template_label_path, map, discard, merge, f_order_para=10., s_order_para=3.):
+    label = sitk.ReadImage(template_label_path)
+    label = sitk.GetArrayFromImage(label)
+    if map:
+        label = label_mapping(label, discard=discard, merge=merge)
+    element, cnt = np.unique(label, return_counts=True)
+    cnt = np.log(cnt)
+    weights = 1 / cnt * f_order_para
+    weights = weights ** s_order_para
+    # softmax
+    weights = np.exp(weights - np.max(weights))
+    weights = weights / np.sum(weights)
+    log_print("INFO", "Label index: {0}".format(str(element)))
+    log_print("INFO", "Label weights: {0}".format(str(weights)))
+    weights = torch.Tensor(weights)
+    return weights
+
 
 def cut_mix(
         img1: sitk.Image,
