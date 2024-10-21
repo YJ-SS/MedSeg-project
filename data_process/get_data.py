@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../seg_method/train_process")
 import os
-from train_process.log_func import log_print
+from train_process.record_func import log_print
 
 
 def get_data_path_list(dataset_name, root_path, num_class):

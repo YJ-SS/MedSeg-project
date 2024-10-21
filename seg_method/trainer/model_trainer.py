@@ -1,8 +1,11 @@
 import itertools
+import logging
+import os.path
 import sys
 
 import numpy as np
 from torch import optim
+from torch.distributed.pipeline.sync.checkpoint import checkpoint
 from torchio import Compose
 from tqdm import tqdm
 
@@ -16,7 +19,7 @@ from data_process.get_data import get_data_path_list
 from data_process.dataset import myDataSet
 from data_process.evalution import get_dice
 from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, get_sup_label_weights
-from train_process.log_func import log_print
+from train_process.record_func import log_print, make_model_saving_dir
 from train_process.loss import KL_divergence, self_contrastive_loss
 from torch.utils.data import DataLoader
 import SimpleITK as sitk
@@ -58,6 +61,25 @@ class SimpleTrainer(object):
         log_print("INFO", "Reconstruction region weights initialized: {}".format(
             self.recon_region_weights.shape
         ))
+        assert os.path.isfile(self.training_info_config['log_save_path']),\
+            log_print("ERROR", "{0} is not exist!!!".format(self.training_info_config['log_save_path']))
+
+        assert os.path.isdir(self.training_info_config['model_para_save_path']),\
+            log_print("ERROR", "{0} is not exist!!!".format(self.training_info_config['model_para_save_path']))
+
+        # Set Log file
+        logging.basicConfig(filename=self.training_info_config['log_save_path'],
+                            level=logging.DEBUG,  # 设置日志级别
+                            format='%(asctime)s %(levelname)s: %(message)s',
+                            datefmt='%Y-%m-%d %H:%M'
+                            )  # 日志格式
+
+        # Make model parameter saving direction
+        make_model_saving_dir(
+            model_config=self.model_config,
+            hyper_para_config=train_config['hyper_para_config'],
+            model_para_save_path=self.training_info_config['model_para_save_path']
+        )
 
         # Get data path
         self.img_path_list, self.label_path_list = get_data_path_list(
@@ -181,6 +203,8 @@ class SimpleTrainer(object):
         val_contras_loss = 0.
         val_dice = 0.
         val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+        checkpoint_cnt = 0.
 
         optimizer = optim.Adamax(
             params=self.net.parameters(),

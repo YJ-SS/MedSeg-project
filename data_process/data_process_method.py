@@ -13,7 +13,7 @@ from torchvision import transforms
 import os
 import numpy as np
 from tqdm import tqdm
-from train_process.log_func import log_print
+from train_process.record_func import log_print
 
 
 
