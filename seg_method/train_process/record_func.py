@@ -30,10 +30,18 @@ def log_print(status: str, content:str)-> None:
 #     logging.error('这是一个错误信息')
 #     logging.critical('这是一个严重错误信息')
 
-def write_log(log_file_path, log_status, content):
+def write2log(log_file_path, log_status, content):
+    # Set Log file
+    logging.basicConfig(filename=log_file_path,
+                        level=logging.DEBUG,  # 设置日志级别
+                        format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M'
+                        )  # 日志格式
     if log_status == 'INFO':
+        logging.info(content)
+    elif log_status == 'WARNING':
+        logging.warning(content)
 
-    pass
 
 def make_model_saving_dir(model_config, hyper_para_config, model_para_save_path):
     dir_name = None
@@ -53,5 +61,6 @@ def make_model_saving_dir(model_config, hyper_para_config, model_para_save_path)
     if not os.path.exists(os.path.join(model_para_save_path, dir_name)):
         os.makedirs(os.path.join(model_para_save_path, dir_name))
     log_print("INFO", "Direction {0} is made!!!".format(dir_name))
+    return os.path.join(model_para_save_path, dir_name)
 
 

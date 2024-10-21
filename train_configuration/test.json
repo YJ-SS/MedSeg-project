@@ -29,8 +29,8 @@
     "unsup_data_num": 128,
     "val_data_num": 64,
     "batch_size": 1,
-    "prefetch_factor": 2,
-    "num_workers": 2
+    "prefetch_factor": 8,
+    "num_workers": 8
 
   },
   "training_info_config": {

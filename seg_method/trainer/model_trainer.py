@@ -1,12 +1,9 @@
 import itertools
-import logging
 import os.path
 import sys
 
 import numpy as np
 from torch import optim
-from torch.distributed.pipeline.sync.checkpoint import checkpoint
-from torchio import Compose
 from tqdm import tqdm
 
 sys.path.append("../model")
@@ -19,12 +16,12 @@ from data_process.get_data import get_data_path_list
 from data_process.dataset import myDataSet
 from data_process.evalution import get_dice
 from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, get_sup_label_weights
-from train_process.record_func import log_print, make_model_saving_dir
+from train_process.record_func import log_print, make_model_saving_dir, write2log
 from train_process.loss import KL_divergence, self_contrastive_loss
 from torch.utils.data import DataLoader
-import SimpleITK as sitk
 import warnings
 import torch.nn as nn
+from datetime import datetime
 warnings.filterwarnings("ignore")
 
 
@@ -53,6 +50,21 @@ class SimpleTrainer(object):
         self.sup_dataloader = None
         self.unsup_dataloader = None
         self.val_dataloader = None
+
+        # Write training information to log file
+        self.training_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        write2log(
+            log_file_path=self.training_info_config['log_save_path'],
+            log_status="WARNING",
+            content="Training start!! Learning rate={0} seg_w={1} rec_w={2} KL_w={3} con_w={4}".format(
+                self.hyper_para_config['lr'],
+                self.hyper_para_config['seg_weight'],
+                self.hyper_para_config['recon_weight'],
+                self.hyper_para_config['kl_weight'],
+                self.hyper_para_config['contras_weight']
+            )
+        )
+
         self.recon_region_weights = get_recon_region_weights(
             data_resolution=self.hyper_para_config['data_resolution'],
             resize=self.hyper_para_config['resize'],
@@ -67,15 +79,8 @@ class SimpleTrainer(object):
         assert os.path.isdir(self.training_info_config['model_para_save_path']),\
             log_print("ERROR", "{0} is not exist!!!".format(self.training_info_config['model_para_save_path']))
 
-        # Set Log file
-        logging.basicConfig(filename=self.training_info_config['log_save_path'],
-                            level=logging.DEBUG,  # 设置日志级别
-                            format='%(asctime)s %(levelname)s: %(message)s',
-                            datefmt='%Y-%m-%d %H:%M'
-                            )  # 日志格式
-
         # Make model parameter saving direction
-        make_model_saving_dir(
+        self.model_para_save_path = make_model_saving_dir(
             model_config=self.model_config,
             hyper_para_config=train_config['hyper_para_config'],
             model_para_save_path=self.training_info_config['model_para_save_path']
@@ -188,23 +193,8 @@ class SimpleTrainer(object):
         return dataloader
 
     def train_dual_MBConv_VAE_(self):
-        train_total_loss = 0.
-        train_seg_loss = 0.
-        train_recon_loss = 0.
-        train_kl_loss = 0.
-        train_contras_loss = 0.
-        train_dice = 0.
-        train_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
-
-        val_total_loss = 0.
-        val_seg_loss = 0.
-        val_recon_loss = 0.
-        val_kl_loss = 0.
-        val_contras_loss = 0.
-        val_dice = 0.
-        val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
-
         checkpoint_cnt = 0.
+        best_val_dice = 0.
 
         optimizer = optim.Adamax(
             params=self.net.parameters(),
@@ -215,6 +205,24 @@ class SimpleTrainer(object):
         scaler = torch.cuda.amp.GradScaler()
 
         for epoch in range(self.epoch):
+            # Record training date
+            train_total_loss = 0.
+            train_seg_loss = 0.
+            train_recon_loss = 0.
+            train_kl_loss = 0.
+            train_contras_loss = 0.
+            train_dice = 0.
+            train_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+            val_total_loss = 0.
+            val_seg_loss = 0.
+            val_recon_loss = 0.
+            val_kl_loss = 0.
+            val_contras_loss = 0.
+            val_dice = 0.
+            val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+            checkpoint_cnt += 1
             # Training process
             log_print("CRITICAL", "Training---")
             self.net.train()
@@ -256,6 +264,7 @@ class SimpleTrainer(object):
                         y_true=label,
                         num_clus=self.model_config['num_class']
                     )
+                    # print("Training avg dice: ", dice_temp)
                     train_dice += dice_temp
                     train_dice_matrix += dice_matrix_temp
 
@@ -300,14 +309,14 @@ class SimpleTrainer(object):
                         y_true=label,
                         num_clus=self.model_config['num_class']
                     )
+                    # print("Validation avg dice: ", dice_temp)
                     val_dice += dice_temp
                     val_dice_matrix += dice_matrix_temp
 
-            log_print(
-                "CRITICAL",
-                "EPOCH={0} train_seg_loss={1:.2f} train_recon_loss={2:.2f} train_KL_loss={3:.2f} "
-                "train_contras_loss={4:.2f} train_dice={5:.2f} "
-                "val_seg_loss={6:.2f} val_recon_loss={7:.2f} val_KL_loss={8:.2f} val_contras_loss={9:.2f} "
+
+            epoch_log_content = "EPOCH={0} train_seg_loss={1:.2f} train_recon_loss={2:.2f} train_KL_loss={3:.2f} "\
+                "train_contras_loss={4:.2f} train_dice={5:.2f} "\
+                "val_seg_loss={6:.2f} val_recon_loss={7:.2f} val_KL_loss={8:.2f} val_contras_loss={9:.2f} "\
                 "val_dice={10:.2f}".format(
                     epoch,
                     train_seg_loss / len(self.unsup_dataloader),
@@ -322,10 +331,47 @@ class SimpleTrainer(object):
                     val_dice / len(self.val_dataloader)
 
                 )
+            log_print("CRITICAL", epoch_log_content)
+            write2log(
+                log_file_path=self.training_info_config['log_save_path'],
+                log_status='INFO',
+                content=str(self.training_time_stamp) + " " + epoch_log_content
             )
-            return
+            if val_dice / len(self.val_dataloader) > best_val_dice:
+                # Save model with better dice
+                best_val_dice = val_dice / len(self.val_dataloader)
+                model_save_path = os.path.join(self.model_para_save_path, "dual_MBConv_VAE best.pth")
+                torch.save({
+                    'epoch': epoch,
+                    "model_name": "dual_MBConv_VAE",
+                    "in_channel": 1,
+                    "num_class": 5,
+                    "residual": True,
+                    "MBConv": True,
+                    "channel_list": [16, 32, 64, 128],
+                    'model_state_dict': self.net.state_dict()
+                }, model_save_path)
+                log_print("INFO", "Best model saved!!!")
 
-        pass
+
+            if checkpoint_cnt / self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
+                # Save checkout point
+                model_save_path = os.path.join(
+                    self.model_para_save_path,
+                    "dual_MBConv_VAE checkpoint{0}.pth".format(epoch)
+                )
+                torch.save({
+                    'epoch': epoch,
+                    "model_name": "dual_MBConv_VAE",
+                    "in_channel": 1,
+                    "num_class": 5,
+                    "residual": True,
+                    "MBConv": True,
+                    "channel_list": [16, 32, 64, 128],
+                    'model_state_dict': self.net.state_dict()
+                }, model_save_path)
+                log_print("INFO", "Checkpoint saved!!!")
+
 
     def get_loss_dict_dual_VAE_(self, seg_img, seg_gt, recon_img, pre_label, pre_recon, mu, logvar, latent_var):
         '''

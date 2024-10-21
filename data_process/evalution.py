@@ -5,7 +5,7 @@ def compute_dice_coffeient(seg1, seg2):
 
 def get_dice(y_pred, y_true, num_clus):
     dice_matrix = [0 for i in range(num_clus)]
-    result = 0
+    avg_dice = 0
     cnt = 0
     # y_true shape: [B,D,H,W]
     # y_pred shape: [B,C,D,H,W] -> [B,D,H,W]
@@ -18,7 +18,7 @@ def get_dice(y_pred, y_true, num_clus):
             dice_matrix[i] = compute_dice_coffeient((y_pred == i), (y_true == i))
             if i != 0:
                 # Do not contain label 0
-                result += dice_matrix[i]
+                avg_dice += dice_matrix[i]
                 cnt += 1
-    result /= cnt
-    return result, dice_matrix
+    avg_dice /= cnt
+    return avg_dice, dice_matrix
