@@ -108,6 +108,7 @@ class SimpleTrainer(object):
         ).to(self.device)
 
         log_print("INFO", "Use device: {0}".format(self.device))
+
         # Build model
         if self.model_name == "dual_MBConv_VAE":
             self.net = MBConvNet(

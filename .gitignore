@@ -1,2 +1,1 @@
 ./training_record/model
-/training_record/model/dual_MBConv_VAE in_c=1 num_c=5 c_list=[16, 32, 64, 128] rec_w=0.01 kl_w=0.0001 con_w=0.0001/dual_MBConv_VAE best.pth
