@@ -354,7 +354,7 @@ class SimpleTrainer(object):
                 log_print("INFO", "Best model saved!!!")
 
 
-            if checkpoint_cnt / self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
+            if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
                 # Save checkout point
                 model_save_path = os.path.join(
                     self.model_para_save_path,
@@ -410,7 +410,10 @@ class SimpleTrainer(object):
 
 
     def train(self):
-        pass
+        if self.model_name == 'dual_MBConv_VAE':
+            self.train_dual_MBConv_VAE_()
+        elif self.model_name == 'monai_3D_unet':
+            pass
     def evaluate(self):
         pass
 
@@ -418,4 +421,4 @@ class SimpleTrainer(object):
 
 if __name__ == '__main__':
     Trainer = SimpleTrainer(config_path="../../train_configuration/test.json")
-    Trainer.train_dual_MBConv_VAE_()
+    Trainer.train()
