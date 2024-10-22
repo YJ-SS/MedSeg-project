@@ -199,3 +199,6 @@
 2024-10-22 07:45 INFO: 2024-10-21 22:16:03 EPOCH=197 train_seg_loss=0.00 train_recon_loss=0.00 train_KL_loss=1.31 train_contras_loss=0.91 train_dice=1.00 val_seg_loss=0.39 val_recon_loss=0.00 val_KL_loss=1.33 val_contras_loss=0.91 val_dice=0.82
 2024-10-22 07:48 INFO: 2024-10-21 22:16:03 EPOCH=198 train_seg_loss=0.00 train_recon_loss=0.00 train_KL_loss=1.31 train_contras_loss=0.91 train_dice=1.00 val_seg_loss=0.38 val_recon_loss=0.00 val_KL_loss=1.33 val_contras_loss=0.91 val_dice=0.82
 2024-10-22 07:51 INFO: 2024-10-21 22:16:03 EPOCH=199 train_seg_loss=0.00 train_recon_loss=0.00 train_KL_loss=1.31 train_contras_loss=0.91 train_dice=1.00 val_seg_loss=0.39 val_recon_loss=0.00 val_KL_loss=1.32 val_contras_loss=0.91 val_dice=0.82
+2024-10-22 16:46 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-22 16:46 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-22 16:52 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001

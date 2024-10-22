@@ -27,6 +27,7 @@ warnings.filterwarnings("ignore")
 
 class SimpleTrainer(object):
     def __init__(self, config_path):
+        assert  os.path.isfile(config_path), log_print("ERROR", "Config file {0} not found!!!".format(config_path))
         # Get training configration
         train_config = json.load(open(config_path))
         self.model_config = train_config['model_config']
@@ -52,7 +53,7 @@ class SimpleTrainer(object):
         self.val_dataloader = None
 
         # Write training information to log file
-        self.training_time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.training_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + self.training_info_config['log_stamp_str']
         write2log(
             log_file_path=self.training_info_config['log_save_path'],
             log_status="WARNING",
@@ -314,9 +315,9 @@ class SimpleTrainer(object):
                     val_dice_matrix += dice_matrix_temp
 
 
-            epoch_log_content = "EPOCH={0} train_seg_loss={1:.2f} train_recon_loss={2:.2f} train_KL_loss={3:.2f} "\
+            epoch_log_content = "EPOCH={0} train_total_loss={11:.2f} train_seg_loss={1:.2f} train_recon_loss={2:.2f} train_KL_loss={3:.2f} "\
                 "train_contras_loss={4:.2f} train_dice={5:.2f} "\
-                "val_seg_loss={6:.2f} val_recon_loss={7:.2f} val_KL_loss={8:.2f} val_contras_loss={9:.2f} "\
+                "val_total_loss={12:.2f} val_seg_loss={6:.2f} val_recon_loss={7:.2f} val_KL_loss={8:.2f} val_contras_loss={9:.2f} "\
                 "val_dice={10:.2f}".format(
                     epoch,
                     train_seg_loss / len(self.unsup_dataloader),
@@ -328,14 +329,15 @@ class SimpleTrainer(object):
                     val_recon_loss / len(self.val_dataloader),
                     val_kl_loss / len(self.val_dataloader),
                     val_contras_loss / len(self.val_dataloader),
-                    val_dice / len(self.val_dataloader)
-
+                    val_dice / len(self.val_dataloader),
+                    train_total_loss / len(self.unsup_dataloader),
+                    val_total_loss / len(self.val_dataloader)
                 )
             log_print("CRITICAL", epoch_log_content)
             write2log(
                 log_file_path=self.training_info_config['log_save_path'],
                 log_status='INFO',
-                content=str(self.training_time_stamp) + " " + epoch_log_content
+                content=str(self.training_stamp) + " " + epoch_log_content
             )
             if val_dice / len(self.val_dataloader) > best_val_dice:
                 # Save model with better dice
@@ -419,6 +421,6 @@ class SimpleTrainer(object):
 
 
 
-if __name__ == '__main__':
-    Trainer = SimpleTrainer(config_path="../../train_configuration/test.json")
-    Trainer.train()
+# if __name__ == '__main__':
+#     Trainer = SimpleTrainer(config_path="../../train_configuration/test.json")
+#     Trainer.train()
