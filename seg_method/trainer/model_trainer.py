@@ -495,7 +495,6 @@ class SimpleTrainer(object):
                 log_status='INFO',
                 content=str(self.training_stamp) + " " + epoch_log_content
             )
-
             if val_dice / len(self.val_dataloader) > best_val_dice:
                 # Save model with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
