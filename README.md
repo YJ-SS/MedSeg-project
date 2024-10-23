@@ -2,9 +2,9 @@
 
 ### Current Support Mode
 - Dual MBConv VAE ```./seg_method/model/dual_MBConv_VAE.py```
+- Simple 3D UNet (MONAI)
 
 ## Models to be Supported
-- Simple 3D UNet (MONAI)
 - Dual Vision Transformer VAE
 
 ## Usage
