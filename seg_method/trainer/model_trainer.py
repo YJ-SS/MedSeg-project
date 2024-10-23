@@ -489,7 +489,6 @@ class SimpleTrainer(object):
                 val_seg_loss / len(self.val_dataloader),
                 val_dice / len(self.val_dataloader)
             )
-
             log_print("CRITICAL", epoch_log_content)
             write2log(
                 log_file_path=self.training_info_config['log_save_path'],
