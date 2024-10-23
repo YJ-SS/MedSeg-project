@@ -294,7 +294,6 @@ class SimpleTrainer(object):
                     label = label.to(self.device)
                     pre_label, recon, mu, logvar, latent = self.net(img)
                     loss_dict = self.get_loss_dict_dual_VAE_(
-                        seg_img=img,
                         seg_gt=label,
                         recon_img=img,
                         pre_label=pre_label,
@@ -384,7 +383,7 @@ class SimpleTrainer(object):
                 log_print("INFO", "Checkpoint saved!!!")
 
 
-    def get_loss_dict_dual_VAE_(self, seg_img, seg_gt, recon_img, pre_label, pre_recon, mu, logvar, latent_var):
+    def get_loss_dict_dual_VAE_(self, seg_gt, recon_img, pre_label, pre_recon, mu, logvar, latent_var):
         '''
         get loss dict when training dual VAE
         :param seg_img:
