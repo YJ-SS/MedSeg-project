@@ -22,6 +22,7 @@ from torch.utils.data import DataLoader
 import warnings
 import torch.nn as nn
 from datetime import datetime
+from monai.networks.nets import UNet
 warnings.filterwarnings("ignore")
 
 
@@ -120,7 +121,14 @@ class SimpleTrainer(object):
                 device=self.device
             )
         elif self.model_name == "monai_3D_unet":
-            pass
+            self.net = UNet(
+                spatial_dims=3,
+                in_channels=self.model_config['in_channel'],
+                out_channels=self.model_config['num_class'],
+                channels=self.model_config['channel_list'],
+                strides=self.model_config['strides'],
+                dropout=self.model_config['dropout'],
+            ).to(self.device)
 
         # Build dataset
         # Build dataloader
@@ -411,17 +419,48 @@ class SimpleTrainer(object):
 
         return loss_dict
 
+    def train_normal_Net_(self):
+        '''
+        Can be used to train any segmentation model with only one output
+        :return:
+        '''
+        checkpoint_cnt = 0.
+        best_val_dice = 0.
+
+        optimizer = optim.Adamax(
+            params=self.net.parameters(),
+            lr=self.hyper_para_config['lr'],
+            weight_decay=self.hyper_para_config['decay'],
+            eps=1e-7
+        )
+        scaler = torch.cuda.amp.GradScaler()
+        for epoch in range(self.epoch):
+            log_print("CRITICAL", "Training---")
+            self.net.train()
+            for img, label in tqdm(self.unsup_dataloader):
+                img = img.to(self.device)
+                label = label.to(self.device)
+                with torch.amp.autocast(device_type=str(self.device), dtype=torch.float16):
+
+
+
+
+
+
+
+
 
     def train(self):
         if self.model_name == 'dual_MBConv_VAE':
             self.train_dual_MBConv_VAE_()
         elif self.model_name == 'monai_3D_unet':
-            pass
+            self.train_normal_Net_()
+
     def evaluate(self):
         pass
 
 
 
 # if __name__ == '__main__':
-#     Trainer = SimpleTrainer(config_path="../../train_configuration/test.json")
+#     Trainer = SimpleTrainer(config_path="../../train_configuration/test_unet_monai.json")
 #     Trainer.train()

@@ -4,8 +4,8 @@ from matplotlib import pyplot as plt, ticker
 from torchio.transforms.preprocessing.intensity.histogram_standardization import train
 
 
-def extract_log_by_time_stamp(log_data, timestamp):
-    pattern = re.compile(rf".*{timestamp}.*$", re.MULTILINE)
+def extract_log_by_time_stamp(log_data, logstamp):
+    pattern = re.compile(rf".*{logstamp}.*$", re.MULTILINE)
     matches = pattern.findall(log_data)
     return matches
 
@@ -20,7 +20,7 @@ def extract_fields(log, fields):
 
 
 
-def extract_data_from_log(log_path, timestamp, fields):
+def extract_data_from_log(log_path, logstamp, fields):
     matches_data = None
     train_info_dict = {}
     for field in fields:
@@ -28,7 +28,7 @@ def extract_data_from_log(log_path, timestamp, fields):
 
     with open(log_path, 'r') as f:
         log_data = f.read()
-        matches_data = extract_log_by_time_stamp(log_data, timestamp)
+        matches_data = extract_log_by_time_stamp(log_data, logstamp)
         f.close()
 
     for line in matches_data:

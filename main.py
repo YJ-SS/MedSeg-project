@@ -1,16 +1,13 @@
-# 这是一个示例 Python 脚本。
+from monai.networks.nets import UNet
+import torch
 
-# 按 ⌃R 执行或将其替换为您的代码。
-# 按 双击 ⇧ 在所有地方搜索类、文件、工具窗口、操作和设置。
-
-
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 ⌘F8 切换断点。
-
-
-# 按装订区域中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+net = UNet(
+    spatial_dims=3,
+    in_channels=1,
+    out_channels=5,
+    channels=[16, 32, 64, 128],
+    strides=[1, 1, 1]
+).cuda()
+x = torch.randn([1,1,32,32,32]).cuda()
+y = net(x)
+print(y.shape)

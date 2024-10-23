@@ -21,8 +21,8 @@ def get_dataloader_transform(stage, resize=None):
     assert stage in ['supervise', 'unsupervise', 'validation'],\
     log_print("ERROE", "Stage must in ['supervise', 'unsupervise', 'validation'], "
                        "current stage: {0}".format(stage))
-    transform2both = None
-    transform2img = None
+    transform2both_list = None
+    transform2img_list = None
     if stage == 'supervise':
         transform2both_list = [
             ToTensord(keys=['image', 'label']),
@@ -41,18 +41,16 @@ def get_dataloader_transform(stage, resize=None):
                 2,
                 Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
             )
-        transform2both = Compose(transform2both_list)
-        transform2img = Compose(transform2img_list)
-
     elif stage == 'unsupervise':
+        transform2both_list = [
+            ToTensord(keys=['image', 'label']),
+            AddChanneld(keys=['image', 'label']),
+        ]
         transform2img_list = [
-            ToTensor(),
-            AddChannel(),
             ScaleIntensity(minv=0., maxv=1.)
         ]
         if resize is not None:
-            transform2img_list.insert(2, Resize(spatial_size=resize, mode='area'))
-        transform2img = Compose(transform2img_list)
+            transform2both_list.insert(2, Resize(spatial_size=resize, mode='area'))
     elif stage == 'validation':
         transform2img_list = [
             ScaleIntensity(minv=0., maxv=1.)
@@ -67,10 +65,10 @@ def get_dataloader_transform(stage, resize=None):
                 2,
                 Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
             )
-        transform2img = Compose(transform2img_list)
-        transform2both = Compose(transform2both_list)
-
+    transform2img = Compose(transform2img_list)
+    transform2both = Compose(transform2both_list)
     return transform2both, transform2img
+
 
 def mapping(label):
     '''

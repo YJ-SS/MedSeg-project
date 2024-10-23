@@ -46,17 +46,24 @@ def write2log(log_file_path, log_status, content):
 def make_model_saving_dir(model_config, hyper_para_config, model_para_save_path):
     dir_name = None
     if model_config['model_name'] == 'dual_MBConv_VAE':
-        dir_name = "{0} in_c={1} num_c={2} c_list={3} rec_w={4} kl_w={5} con_w={6}".format(
+        dir_name = "{0} in_c={1} num_c={2} c_list={3} rec_w={4} kl_w={5} con_w={6} lr={7}".format(
             model_config['model_name'],
             model_config['in_channel'],
             model_config['num_class'],
             model_config['channel_list'],
             hyper_para_config['recon_weight'],
             hyper_para_config['kl_weight'],
-            hyper_para_config['contras_weight']
+            hyper_para_config['contras_weight'],
+            hyper_para_config['lr']
         )
     else:
-        pass
+        dir_name = "{0} in_c={1} num_c={2} c_list={3} lr={4}".format(
+            model_config['model_name'],
+            model_config['in_channel'],
+            model_config['num_class'],
+            model_config['channel_list'],
+            hyper_para_config['lr']
+        )
     assert dir_name is not None, log_print("ERROR", "Model saving direction str is None!!!")
     if not os.path.exists(os.path.join(model_para_save_path, dir_name)):
         os.makedirs(os.path.join(model_para_save_path, dir_name))
