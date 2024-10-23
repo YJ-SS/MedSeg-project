@@ -416,7 +416,6 @@ class SimpleTrainer(object):
             "kl_loss": kl_loss,
             "contrastive_loss": contrastive_loss
         }
-
         return loss_dict
 
     def train_normal_Net_(self):
