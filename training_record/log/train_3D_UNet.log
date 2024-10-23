@@ -1,0 +1,9 @@
+2024-10-23 10:38 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 10:42 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 10:43 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 10:43 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 10:45 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 11:22 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 11:24 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-23 11:40 INFO: 2024-10-23 11:24:36 seg oasis4 EPOCH=0 train_seg_loss=0.65 train_dice=0.34 val_seg_loss=0.34 val_dice=0.42
+2024-10-23 11:43 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001

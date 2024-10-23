@@ -350,15 +350,15 @@ class SimpleTrainer(object):
             if val_dice / len(self.val_dataloader) > best_val_dice:
                 # Save model with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
-                model_save_path = os.path.join(self.model_para_save_path, "dual_MBConv_VAE best.pth")
+                model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
                 torch.save({
                     'epoch': epoch,
-                    "model_name": "dual_MBConv_VAE",
-                    "in_channel": 1,
-                    "num_class": 5,
-                    "residual": True,
-                    "MBConv": True,
-                    "channel_list": [16, 32, 64, 128],
+                    "model_name": self.model_config['model_name'],
+                    "in_channel": self.model_config['in_channel'],
+                    "num_class": self.model_config['num_class'],
+                    "residual": self.model_config['residual'],
+                    "MBConv": self.model_config['MBConv'],
+                    "channel_list": self.model_config['channel_list'],
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
                 log_print("INFO", "Best model saved!!!")
@@ -368,16 +368,16 @@ class SimpleTrainer(object):
                 # Save checkout point
                 model_save_path = os.path.join(
                     self.model_para_save_path,
-                    "dual_MBConv_VAE checkpoint{0}.pth".format(epoch)
+                    "{0} checkpoint{1}.pth".format(self.model_config['model_name'], epoch)
                 )
                 torch.save({
                     'epoch': epoch,
-                    "model_name": "dual_MBConv_VAE",
-                    "in_channel": 1,
-                    "num_class": 5,
-                    "residual": True,
-                    "MBConv": True,
-                    "channel_list": [16, 32, 64, 128],
+                    "model_name": self.model_config['model_name'],
+                    "in_channel": self.model_config['in_channel'],
+                    "num_class": self.model_config['num_class'],
+                    "residual": self.model_config['residual'],
+                    "MBConv": self.model_config['MBConv'],
+                    "channel_list": self.model_config['channel_list'],
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
                 log_print("INFO", "Checkpoint saved!!!")
@@ -420,30 +420,110 @@ class SimpleTrainer(object):
     def train_normal_Net_(self):
         '''
         Can be used to train any segmentation model with only one output
-        :return:
+        :return: None
         '''
         checkpoint_cnt = 0.
         best_val_dice = 0.
-
         optimizer = optim.Adamax(
             params=self.net.parameters(),
             lr=self.hyper_para_config['lr'],
             weight_decay=self.hyper_para_config['decay'],
             eps=1e-7
         )
+        seg_loss_func = nn.CrossEntropyLoss(weight=self.label_weights)
         scaler = torch.cuda.amp.GradScaler()
         for epoch in range(self.epoch):
+            train_seg_loss = 0.
+            train_dice = 0.
+            train_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
+            val_seg_loss = 0.
+            val_dice = 0.
+            val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+
             log_print("CRITICAL", "Training---")
             self.net.train()
             for img, label in tqdm(self.unsup_dataloader):
                 img = img.to(self.device)
                 label = label.to(self.device)
                 with torch.amp.autocast(device_type=str(self.device), dtype=torch.float16):
+                    pre_label = self.net(img)
+                    seg_loss = seg_loss_func(pre_label, label.squeeze(dim=1).long())
+                    train_seg_loss += seg_loss.item()
+                    dice_temp, dice_matrix_temp = get_dice(
+                        y_pred=pre_label,
+                        y_true=label,
+                        num_clus=self.model_config['num_class']
+                    )
+                    train_dice += dice_temp
+                    train_dice_matrix += dice_matrix_temp
+                optimizer.zero_grad()
+                scaler.scale(seg_loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
 
+            # Validation process
+            log_print("CRITICAL", "Validation---")
+            self.net.eval()
+            with torch.no_grad():
+                with torch.amp.autocast(device_type=str(self.device), dtype=torch.float16):
+                    for img, label in tqdm(self.val_dataloader):
+                        img = img.to(self.device)
+                        label = label.to(self.device)
+                        pre_label = self.net(img)
+                        seg_loss = seg_loss_func(pre_label, label.squeeze(dim=1).long())
+                        val_seg_loss += seg_loss.item()
+                        dice_temp, dice_matrix_temp = get_dice(
+                            y_pred=pre_label,
+                            y_true=label,
+                            num_clus=self.model_config['num_class']
+                        )
+                        val_dice += dice_temp
+                        val_dice_matrix += dice_matrix_temp
 
+            epoch_log_content = "EPOCH={0} train_seg_loss={1:.2f} train_dice={2:.2f} "\
+                                "val_seg_loss={3:.2f} val_dice={4:.2f}".format(
+                epoch,
+                train_seg_loss / len(self.unsup_dataloader),
+                train_dice / len(self.unsup_dataloader),
+                val_seg_loss / len(self.val_dataloader),
+                val_dice / len(self.val_dataloader)
+            )
 
+            log_print("CRITICAL", epoch_log_content)
+            write2log(
+                log_file_path=self.training_info_config['log_save_path'],
+                log_status='INFO',
+                content=str(self.training_stamp) + " " + epoch_log_content
+            )
 
+            if val_dice / len(self.val_dataloader) > best_val_dice:
+                # Save model with better dice
+                best_val_dice = val_dice / len(self.val_dataloader)
+                model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
+                torch.save({
+                    'epoch': epoch,
+                    "model_name": self.model_config['model_name'],
+                    "in_channel": self.model_config['in_channel'],
+                    "num_class": self.model_config['num_class'],
+                    'model_state_dict': self.net.state_dict()
+                }, model_save_path)
+                log_print("INFO", "Best model saved!!!")
 
+            if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
+                # Save checkout point
+                model_save_path = os.path.join(
+                    self.model_para_save_path,
+                    "{0} checkpoint{1}.pth".format(self.model_config['model_name'], epoch)
+                )
+                torch.save({
+                    'epoch': epoch,
+                    "model_name": self.model_config['model_name'],
+                    "in_channel": self.model_config['in_channel'],
+                    "num_class": self.model_config['num_class'],
+                    'model_state_dict': self.net.state_dict()
+                }, model_save_path)
+                log_print("INFO", "Checkpoint saved!!!")
 
 
 
