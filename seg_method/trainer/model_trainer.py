@@ -22,7 +22,7 @@ from torch.utils.data import DataLoader
 import warnings
 import torch.nn as nn
 from datetime import datetime
-from monai.networks.nets import UNet
+from monai.networks.nets import UNet, SwinUNETR
 warnings.filterwarnings("ignore")
 
 
@@ -129,6 +129,22 @@ class SimpleTrainer(object):
                 strides=self.model_config['strides'],
                 dropout=self.model_config['dropout'],
             ).to(self.device)
+        elif self.model_name == "SwinUNETR":
+            self.net = SwinUNETR(
+                img_size=self.hyper_para_config['data_resolution']
+                    if self.hyper_para_config['resize'] is None
+                    else self.hyper_para_config['data_resolution'],
+                in_channels=self.model_config['in_channel'],
+                out_channels=self.model_config['num_class'],
+                drop_rate=self.model_config['dropout'],
+                feature_size=self.model_config['feature_size'],
+                depths=self.model_config['depths'],
+                num_heads=self.model_config['num_heads']
+            ).to(self.device)
+        else:
+            log_print("ERROR", "Model {0} has not been supported!!!".format(self.model_name))
+            return
+
 
         # Build dataset
         # Build dataloader
@@ -529,7 +545,7 @@ class SimpleTrainer(object):
     def train(self):
         if self.model_name == 'dual_MBConv_VAE':
             self.train_dual_MBConv_VAE_()
-        elif self.model_name == 'monai_3D_unet':
+        elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
             self.train_normal_Net_()
 
     def evaluate(self):
