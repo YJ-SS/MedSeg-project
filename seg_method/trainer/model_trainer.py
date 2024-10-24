@@ -455,6 +455,7 @@ class SimpleTrainer(object):
             val_seg_loss = 0.
             val_dice = 0.
             val_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+            checkpoint_cnt += 1
 
             log_print("CRITICAL", "Training---")
             self.net.train()
