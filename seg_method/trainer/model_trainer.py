@@ -264,7 +264,6 @@ class SimpleTrainer(object):
                     # Supervised
                     pre_label, _, _, _, _ = self.net(img1)
                     loss_dict = self.get_loss_dict_dual_VAE_(
-                        seg_img=img1,
                         seg_gt=label,
                         recon_img=img2,
                         pre_label=pre_label,
