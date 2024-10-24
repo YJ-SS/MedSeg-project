@@ -1,15 +1,27 @@
 import re
+from typing import Union, List, Any
 
 from matplotlib import pyplot as plt, ticker
-from torchio.transforms.preprocessing.intensity.histogram_standardization import train
 
 
-def extract_log_by_time_stamp(log_data, logstamp):
+def extract_log_by_time_stamp(log_data, logstamp)-> Union[list[Any], list[str]]:
+    '''
+    Use logstamp to extract target logs
+    :param log_data:
+    :param logstamp:
+    :return:
+    '''
     pattern = re.compile(rf".*{logstamp}.*$", re.MULTILINE)
     matches = pattern.findall(log_data)
     return matches
 
-def extract_fields(log, fields):
+def extract_fields(log, fields)->dict[str, float]:
+    '''
+    Extract field's value from log
+    :param log: "epoch=2 total_loss=0.32"
+    :param fields: ['epoch','total_loss']
+    :return: {'epoch':2, 'total_loss':0.32}
+    '''
     data_dict = {}
     for field in fields:
         pattern = rf"{field}=(\S+)"  # 正则表达式，匹配字段名和值
@@ -20,7 +32,14 @@ def extract_fields(log, fields):
 
 
 
-def extract_data_from_log(log_path, logstamp, fields):
+def extract_data_from_log(log_path, logstamp, fields)->dict[str,list[float]]:
+    '''
+    Get information during training, return as a dict
+    :param log_path:
+    :param logstamp:
+    :param fields:
+    :return:{'epoch':[0,1,2,3,4,5], 'total_loss':[1.2,1.1,0.8,0.5,0.3]}
+    '''
     matches_data = None
     train_info_dict = {}
     for field in fields:
@@ -39,6 +58,18 @@ def extract_data_from_log(log_path, logstamp, fields):
 
 
 def draw_line_graph(x, y_list, label_list, color_list, title, loc='upper right', ylabel='LOSS', graph_name='line_graph'):
+    '''
+
+    :param x:
+    :param y_list:
+    :param label_list:
+    :param color_list:
+    :param title:
+    :param loc:
+    :param ylabel:
+    :param graph_name:
+    :return:
+    '''
     plt.figure(figsize=(10, 5), dpi=80)
     plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(nbins=10))
     plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(nbins=20))
