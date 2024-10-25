@@ -1,10 +1,11 @@
 import itertools
 import os.path
 import sys
-
+import SimpleITK as sitk
 import numpy as np
 from torch import optim
 from tqdm import tqdm
+from win32comext.axscript.client.framework import state_map
 
 sys.path.append("../model")
 sys.path.append("../../data_process")
@@ -15,7 +16,8 @@ import torch
 from data_process.get_data import get_data_path_list
 from data_process.dataset import myDataSet
 from data_process.evalution import get_dice
-from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, get_sup_label_weights
+from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, \
+    get_sup_label_weights, get_img_4_val
 from train_process.record_func import log_print, make_model_saving_dir, write2log
 from train_process.loss import KL_divergence, self_contrastive_loss
 from torch.utils.data import DataLoader
@@ -100,6 +102,16 @@ class SimpleTrainer(object):
         log_print("INFO", "Total image path list length: {0}".format(len(self.img_path_list)))
         log_print("INFO", "Total label path list length: {0}".format(len(self.label_path_list)))
 
+        self.sup_img_list, self.sup_label_list = self.img_path_list[:self.sup_data_num], \
+            self.label_path_list[:self.sup_data_num]
+
+        self.unsup_img_list, self.unsup_label_list = self.img_path_list[: self.unsup_data_num],\
+            self.label_path_list[: self.unsup_data_num]
+
+        self.val_img_list, self.val_label_list = self.img_path_list[-self.val_data_num:],\
+            self.label_path_list[-self.val_data_num:]
+
+
         self.label_weights = get_sup_label_weights(
             template_label_path=self.label_path_list[0],
             map=self.hyper_para_config['label_mapping'],
@@ -149,23 +161,23 @@ class SimpleTrainer(object):
         # Build dataset
         # Build dataloader
         self.sup_dataloader = self.get_dataloader_(
-            img_path_list=self.img_path_list[:self.sup_data_num],
-            label_path_list=self.label_path_list[:self.sup_data_num],
+            img_path_list=self.sup_img_list,
+            label_path_list=self.sup_label_list,
             stage="supervise"
         )
         log_print("INFO", "Supervised dataloader length: {0}".format(len(self.sup_dataloader)))
         self.sup_dataloader = itertools.cycle(self.sup_dataloader)
 
         self.unsup_dataloader = self.get_dataloader_(
-            img_path_list=self.img_path_list[: self.unsup_data_num],
-            label_path_list=self.label_path_list[: self.unsup_data_num],
+            img_path_list=self.unsup_img_list,
+            label_path_list=self.unsup_label_list,
             stage="unsupervise"
         )
         log_print("INFO", "Unsupervised dataloader length: {0}".format(len(self.unsup_dataloader)))
 
         self.val_dataloader = self.get_dataloader_(
-            img_path_list=self.img_path_list[-self.val_data_num:],
-            label_path_list=self.label_path_list[-self.val_data_num:],
+            img_path_list=self.val_img_list,
+            label_path_list=self.val_label_list,
             stage="validation"
         )
         log_print("INFO", "Validation dataloader length: {0}".format(len(self.val_dataloader)))
@@ -525,7 +537,7 @@ class SimpleTrainer(object):
                 log_print("INFO", "Best model saved!!!")
 
             if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
-                # Save checkout point
+                # Save checkpoint
                 model_save_path = os.path.join(
                     self.model_para_save_path,
                     "{0} checkpoint{1}.pth".format(self.model_config['model_name'], epoch)
@@ -539,17 +551,52 @@ class SimpleTrainer(object):
                 }, model_save_path)
                 log_print("INFO", "Checkpoint saved!!!")
 
-
-
-
     def train(self):
         if self.model_name == 'dual_MBConv_VAE':
             self.train_dual_MBConv_VAE_()
         elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
             self.train_normal_Net_()
+        else:
+            log_print("ERROR", "{0} has not been supported!!!".format(self.model_name))
 
-    def evaluate(self):
+    def load_model_info_(self):
+        model_save_path = os.path.join(
+            self.model_para_save_path,
+            "{0} best.pth".format(self.model_config['model_name']))
+        model_info_dict = torch.load(model_save_path)
+        return model_info_dict
+
+
+    def evaluate_one_(self, model, val_img_path):
+        '''
+        Get a segmentation of the input image
+        :param val_img_path:
+        :return:
+        '''
+        img_info_dict = get_img_4_val(val_img_path)
+        img = img_info_dict['img'].to(self.device)
+        model.eval()
+        with torch.no_grad():
+            pre_label = model(img)
+            print(img.shape, pre_label.shape)
         pass
+
+
+    def evaluate(self, img_path_list=None):
+        '''
+        Evaluate model, product predict segmentation.
+        :return:
+        '''
+        if img_path_list is None:
+            img_path_list = self.val_img_list
+        state_dict = self.load_model_info_()['model_state_dict']
+        self.net.load_state_dict(state_dict)
+        self.net.to(self.device)
+        for img_path in img_path_list:
+            self.evaluate_one_(self.net, img_path)
+            return
+
+
 
 
 

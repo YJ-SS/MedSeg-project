@@ -1,6 +1,10 @@
 import sys
+from typing import Dict, Union, Any, Sequence, Mapping
+
+from torch import Tensor
+
 sys.path.append("../seg_method/train_process")
-from numpy import random
+from numpy import random, ndarray
 import SimpleITK as sitk
 import torch
 from monai.transforms import (Compose, Resized, Resize, apply_transform, ToTensord, ToTensor, AddChanneld, AddChannel,
@@ -163,6 +167,64 @@ def get_sup_label_weights(template_label_path, map, discard, merge, f_order_para
     log_print("INFO", "Label weights: {0}".format(str(weights)))
     weights = torch.Tensor(weights)
     return weights
+
+def get_img_4_val(img_path:str, resize=None)-> dict[str, Any]:
+    '''
+
+    :param img_path:
+    :param resize:list[float]
+    :return:
+    '''
+    img = sitk.ReadImage(img_path)
+    ori_spacing = img.GetSpacing()
+    ori_origin = img.GetOrigin()
+    ori_direction = img.GetDirection()
+    ori_size = img.GetSize()
+    img_array = sitk.GetArrayFromImage(img)
+    transform_list = [
+        ToTensor(),
+        ScaleIntensity(minv=0., maxv=1.),
+        AddChannel(),
+        AddChannel()
+    ]
+    if resize is not None:
+        # No need to resize
+        transform_list.insert(
+            3,
+            Resize(spatial_size=resize, mode='area')
+        )
+    transform = Compose(transform_list)
+    img_array = transform(img_array)
+    result_dict = {
+        'ori_spacing': ori_spacing,
+        'ori_origin': ori_origin,
+        'ori_direction': ori_direction,
+        'img_size': ori_size,
+        'img': img_array
+    }
+    return result_dict
+
+
+def resample(input_image: sitk.Image, new_size: list[int], interpolator=sitk.sitkNearestNeighbor):
+    original_size = input_image.GetSize()
+    original_spacing = input_image.GetSpacing()
+
+    # Compute the new spacing based on the new size
+    new_spacing = [
+        (original_size[0] * original_spacing[0]) / new_size[0],
+        (original_size[1] * original_spacing[1]) / new_size[1],
+        (original_size[2] * original_spacing[2]) / new_size[2],
+    ]
+
+    resample_item = sitk.ResampleImageFilter()
+    resample_item.SetOutputSpacing(new_spacing)
+    resample_item.SetSize(new_size)
+    resample_item.SetInterpolator(interpolator)
+    resample_item.SetOutputDirection(input_image.GetDirection())
+    resample_item.SetOutputOrigin(input_image.GetOrigin())
+    resampled_image = resample_item.Execute(input_image)
+    return resampled_image
+
 
 
 def cut_mix(
