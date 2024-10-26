@@ -1,6 +1,6 @@
 # MedSeg-project
 
-### Current Support Mode
+## Current Support Mode
 - Dual MBConv VAE ```./seg_method/model/dual_MBConv_VAE.py```
 - Simple 3D UNet (MONAI)
 - SwinUNTER (MONAI)
