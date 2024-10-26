@@ -16,3 +16,4 @@ Set your configuration in direction ```./train_configuration```, you can change 
 configuration in ```./train_configration``` and named like ```your_config.json```.
 
 Run ```script/train_model.py``` to train dual_MBConv_VAE model with correct json file path.
+
