@@ -168,32 +168,47 @@ def get_sup_label_weights(template_label_path, map, discard, merge, f_order_para
     weights = torch.Tensor(weights)
     return weights
 
-def get_img_4_val(img_path:str, resize=None)-> dict[str, Any]:
+def get_data_4_val(data_path:str, status:str, resize=None)-> dict[str, Any]:
     '''
-
-    :param img_path:
+    Get image or label for validation
+    :param data_path:
     :param resize:list[float]
-    :return:
+    :return: data information dict
     '''
-    img = sitk.ReadImage(img_path)
+    assert status in ['image', 'label'],\
+        log_print("ERROR", "Status must be 'image' or 'label', "
+                           "current status={0}".format(status))
+    img = sitk.ReadImage(data_path)
     ori_spacing = img.GetSpacing()
     ori_origin = img.GetOrigin()
     ori_direction = img.GetDirection()
     ori_size = img.GetSize()
     img_array = sitk.GetArrayFromImage(img)
-    transform_list = [
+    img_transform_list = [
         ToTensor(),
         ScaleIntensity(minv=0., maxv=1.),
         AddChannel(),
         AddChannel()
     ]
+    label_transform_list = [
+        ToTensor(),
+        AddChannel()
+    ]
     if resize is not None:
         # No need to resize
-        transform_list.insert(
+        img_transform_list.insert(
             3,
             Resize(spatial_size=resize, mode='area')
         )
-    transform = Compose(transform_list)
+        label_transform_list.insert(
+            2,
+            Resize(spatial_size=resize, mode='nearest')
+        )
+    transform = None
+    if status == 'image':
+        transform = Compose(img_transform_list)
+    elif status == 'label':
+        transform = Compose(label_transform_list)
     img_array = transform(img_array)
     result_dict = {
         'ori_spacing': ori_spacing,

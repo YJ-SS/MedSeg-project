@@ -21,7 +21,7 @@ from data_process.get_data import get_data_path_list
 from data_process.dataset import myDataSet
 from data_process.evalution import get_dice
 from data_process.data_process_method import get_dataloader_transform, get_recon_region_weights, \
-    get_sup_label_weights, get_img_4_val
+    get_sup_label_weights, get_data_4_val
 from train_process.record_func import log_print, make_model_saving_dir, write2log
 from train_process.loss import KL_divergence, self_contrastive_loss
 from torch.utils.data import DataLoader
@@ -29,6 +29,7 @@ import warnings
 import torch.nn as nn
 from datetime import datetime
 from monai.networks.nets import UNet, SwinUNETR
+import pathlib
 warnings.filterwarnings("ignore")
 
 
@@ -579,21 +580,23 @@ class SimpleTrainer(object):
         '''
         Get a segmentation of the input image
         :param val_img_path:
-        :return: A SimpleITK Image predicted by model and dice score
+        :return: A SimpleITK Image predicted by model, dice score and dice matrix
         '''
         # Get original image information to restore image
         # Spacing, Origin, Direction, Size and Processed Image
-        img_info_dict = get_img_4_val(
+        img_info_dict = get_data_4_val(
             val_img_path,
+            status='image',
             resize=None if self.hyper_para_config['resize'] is None else self.hyper_para_config['resize']
         )
-        label_info_dict = get_img_4_val(
+        label_info_dict = get_data_4_val(
             val_label_path,
+            status='label',
             resize=None if self.hyper_para_config['resize'] is None else self.hyper_para_config['resize']
         )
         img = img_info_dict['img'].to(self.device)
-        gt = label_info_dict['img'].to(self.device).squeeze(dim=1)
-        print("GT shape: ", gt.shape)
+        gt = label_info_dict['img'].to(self.device)
+        log_print("INFO", "Validation: Image shape={0}, GT shape={1}".format(img.shape, gt.shape))
         model.eval()
         with torch.no_grad():
             if self.model_name == 'dual_MBConv_VAE':
@@ -601,7 +604,7 @@ class SimpleTrainer(object):
             elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
                 pre_label = model(img)
         dice, dice_matrix = get_dice(y_pred=pre_label, y_true=gt, num_clus=self.model_config['num_class'])
-        print("pre_label: ", pre_label.shape, "dice: ", dice, "dice_matrix: ", dice_matrix)
+        log_print("INFO", "Dice score={0:.4f}, Dice Matrix={1}".format(dice, dice_matrix))
         pre_label = torch.argmax(pre_label.to('cpu').squeeze(dim=0), dim=0).numpy().astype(np.int16)
         pre_mask = sitk.GetImageFromArray(pre_label)
         pre_mask.SetSpacing(img_info_dict['ori_spacing'])
@@ -613,7 +616,7 @@ class SimpleTrainer(object):
                 pre_mask,
                 new_size=img_info_dict['img_size']
             )
-        return pre_mask
+        return pre_mask, dice, dice_matrix
 
 
 
@@ -628,11 +631,39 @@ class SimpleTrainer(object):
         state_dict = self.load_model_info_()['model_state_dict']
         self.net.load_state_dict(state_dict)
         self.net.to(self.device)
-        for img_path, label_path in zip(img_path_list, label_path_list):
-            pre_mask = self.evaluate_one_(self.net, img_path, label_path)
-            print("image path: ", img_path, "label path: ", label_path)
-            sitk.WriteImage(pre_mask, "C:\\Users\\Administrator\\Desktop\\pre_mask.nii.gz")
-            return
+        avg_dice = 0.
+        avg_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
+        validation_time = datetime.now().strftime("%Y-%m-%d")
+        validation_time_log = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        predict_mask_name = self.model_name + " pre_mask " + str(validation_time)
+        for img_path, label_path in tqdm(zip(img_path_list, label_path_list), total=len(img_path_list)):
+            pre_mask, dice, dice_matrix = self.evaluate_one_(self.net, img_path, label_path)
+            avg_dice += dice
+            avg_dice_matrix += dice_matrix
+            dir_path = os.path.dirname(label_path)
+            pre_mask_path = os.path.join(dir_path, predict_mask_name + ".nii.gz")
+            sitk.WriteImage(pre_mask, pre_mask_path)
+            val_log_content = "img_path={0} dice={1:.4f} dice_matrix={2}".format(
+                img_path,
+                dice,
+                dice_matrix
+            )
+            write2log(
+                log_file_path=self.training_info_config['log_save_path'],
+                log_status='INFO',
+                content="Validation " + str(validation_time_log) + " " + val_log_content
+            )
+        # Write average dice and average dice matrix
+        avg_dice_info = "INFO", "Average dice={0}, average dice matrix={1}".format(
+            avg_dice / len(img_path_list),
+            avg_dice_matrix / len(img_path_list)
+        )
+        write2log(
+            log_file_path=self.training_info_config['log_save_path'],
+            log_status='INFO',
+            content="Validation " + str(validation_time_log) + " " + avg_dice_info
+        )
+        log_print("INFO", avg_dice_info)
 
 
 
