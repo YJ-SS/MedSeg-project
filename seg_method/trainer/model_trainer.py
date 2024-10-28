@@ -1,11 +1,15 @@
 import itertools
 import os.path
 import sys
+from cProfile import label
+
 import SimpleITK as sitk
 import numpy as np
 from torch import optim
 from tqdm import tqdm
 from win32comext.axscript.client.framework import state_map
+
+from data_process_method import resample
 
 sys.path.append("../model")
 sys.path.append("../../data_process")
@@ -560,6 +564,10 @@ class SimpleTrainer(object):
             log_print("ERROR", "{0} has not been supported!!!".format(self.model_name))
 
     def load_model_info_(self):
+        '''
+        Load model parameter based on json file
+        :return: Model information dict, include model parameter
+        '''
         model_save_path = os.path.join(
             self.model_para_save_path,
             "{0} best.pth".format(self.model_config['model_name']))
@@ -567,33 +575,63 @@ class SimpleTrainer(object):
         return model_info_dict
 
 
-    def evaluate_one_(self, model, val_img_path):
+    def evaluate_one_(self, model, val_img_path, val_label_path):
         '''
         Get a segmentation of the input image
         :param val_img_path:
-        :return:
+        :return: A SimpleITK Image predicted by model and dice score
         '''
-        img_info_dict = get_img_4_val(val_img_path)
+        # Get original image information to restore image
+        # Spacing, Origin, Direction, Size and Processed Image
+        img_info_dict = get_img_4_val(
+            val_img_path,
+            resize=None if self.hyper_para_config['resize'] is None else self.hyper_para_config['resize']
+        )
+        label_info_dict = get_img_4_val(
+            val_label_path,
+            resize=None if self.hyper_para_config['resize'] is None else self.hyper_para_config['resize']
+        )
         img = img_info_dict['img'].to(self.device)
+        gt = label_info_dict['img'].to(self.device).squeeze(dim=1)
+        print("GT shape: ", gt.shape)
         model.eval()
         with torch.no_grad():
-            pre_label = model(img)
-            print(img.shape, pre_label.shape)
-        pass
+            if self.model_name == 'dual_MBConv_VAE':
+                pre_label, _, _, _, _ = model(img)
+            elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
+                pre_label = model(img)
+        dice, dice_matrix = get_dice(y_pred=pre_label, y_true=gt, num_clus=self.model_config['num_class'])
+        print("pre_label: ", pre_label.shape, "dice: ", dice, "dice_matrix: ", dice_matrix)
+        pre_label = torch.argmax(pre_label.to('cpu').squeeze(dim=0), dim=0).numpy().astype(np.int16)
+        pre_mask = sitk.GetImageFromArray(pre_label)
+        pre_mask.SetSpacing(img_info_dict['ori_spacing'])
+        pre_mask.SetDirection(img_info_dict['ori_direction'])
+        pre_mask.SetOrigin(img_info_dict['ori_origin'])
+        if self.hyper_para_config['resize']:
+            # Restore mask resolution
+            pre_mask = resample(
+                pre_mask,
+                new_size=img_info_dict['img_size']
+            )
+        return pre_mask
 
 
-    def evaluate(self, img_path_list=None):
+
+    def evaluate(self, img_path_list=None, label_path_list=None):
         '''
         Evaluate model, product predict segmentation.
         :return:
         '''
-        if img_path_list is None:
+        if img_path_list is None and label_path_list is None:
             img_path_list = self.val_img_list
+            label_path_list = self.val_label_list
         state_dict = self.load_model_info_()['model_state_dict']
         self.net.load_state_dict(state_dict)
         self.net.to(self.device)
-        for img_path in img_path_list:
-            self.evaluate_one_(self.net, img_path)
+        for img_path, label_path in zip(img_path_list, label_path_list):
+            pre_mask = self.evaluate_one_(self.net, img_path, label_path)
+            print("image path: ", img_path, "label path: ", label_path)
+            sitk.WriteImage(pre_mask, "C:\\Users\\Administrator\\Desktop\\pre_mask.nii.gz")
             return
 
 

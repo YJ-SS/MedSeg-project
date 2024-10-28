@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+
 
 def compute_dice_coffeient(seg1, seg2)->float:
     '''
@@ -24,7 +26,7 @@ def get_dice(y_pred, y_true, num_clus)->tuple[float,list[float]]:
     y_pred = torch.argmax(y_pred, dim=1).squeeze(dim=1).detach().cpu().numpy()
     y_true = y_true.squeeze(dim=1).detach().cpu().numpy()
     for i in range(0, num_clus):
-        if (y_true == i).sum() == 0 or (y_true == i).sum() == 0:
+        if (y_true == i).sum() == 0 or (y_pred == i).sum() == 0:
             continue
         else:
             dice_matrix[i] = compute_dice_coffeient((y_pred == i), (y_true == i))
