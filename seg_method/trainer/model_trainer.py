@@ -1,14 +1,11 @@
 import itertools
 import os.path
 import sys
-from cProfile import label
-
+import logging
 import SimpleITK as sitk
 import numpy as np
 from torch import optim
 from tqdm import tqdm
-from win32comext.axscript.client.framework import state_map
-
 from data_process_method import resample
 
 sys.path.append("../model")
@@ -29,7 +26,6 @@ import warnings
 import torch.nn as nn
 from datetime import datetime
 from monai.networks.nets import UNet, SwinUNETR
-import pathlib
 warnings.filterwarnings("ignore")
 
 
@@ -60,19 +56,34 @@ class SimpleTrainer(object):
         self.unsup_dataloader = None
         self.val_dataloader = None
 
+        # Initialize log file
+        logging.basicConfig(
+            filename=self.training_info_config['log_save_path'],
+            level=logging.DEBUG,  # 设置日志级别
+            format='%(asctime)s %(levelname)s: %(message)s',
+            datefmt='%Y-%m-%d %H:%M' # 日志格式
+        )
+
         # Write training information to log file
         self.training_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + self.training_info_config['log_stamp_str']
-        write2log(
-            log_file_path=self.training_info_config['log_save_path'],
-            log_status="WARNING",
-            content="Training start!! Learning rate={0} seg_w={1} rec_w={2} KL_w={3} con_w={4}".format(
+        logging.warning("Training start!! Learning rate={0} seg_w={1} rec_w={2} KL_w={3} con_w={4}".format(
                 self.hyper_para_config['lr'],
                 self.hyper_para_config['seg_weight'],
                 self.hyper_para_config['recon_weight'],
                 self.hyper_para_config['kl_weight'],
                 self.hyper_para_config['contras_weight']
-            )
-        )
+            ))
+        # write2log(
+        #     log_file_path=self.training_info_config['log_save_path'],
+        #     log_status="WARNING",
+        #     content="Training start!! Learning rate={0} seg_w={1} rec_w={2} KL_w={3} con_w={4}".format(
+        #         self.hyper_para_config['lr'],
+        #         self.hyper_para_config['seg_weight'],
+        #         self.hyper_para_config['recon_weight'],
+        #         self.hyper_para_config['kl_weight'],
+        #         self.hyper_para_config['contras_weight']
+        #     )
+        # )
 
         self.recon_region_weights = get_recon_region_weights(
             data_resolution=self.hyper_para_config['data_resolution'],
@@ -374,11 +385,12 @@ class SimpleTrainer(object):
                     val_total_loss / len(self.val_dataloader)
                 )
             log_print("CRITICAL", epoch_log_content)
-            write2log(
-                log_file_path=self.training_info_config['log_save_path'],
-                log_status='INFO',
-                content=str(self.training_stamp) + " " + epoch_log_content
-            )
+            logging.info(str(self.training_stamp) + " " + epoch_log_content)
+            # write2log(
+            #     log_file_path=self.training_info_config['log_save_path'],
+            #     log_status='INFO',
+            #     content=str(self.training_stamp) + " " + epoch_log_content
+            # )
             if val_dice / len(self.val_dataloader) > best_val_dice:
                 # Save model with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
@@ -523,11 +535,12 @@ class SimpleTrainer(object):
                 val_dice / len(self.val_dataloader)
             )
             log_print("CRITICAL", epoch_log_content)
-            write2log(
-                log_file_path=self.training_info_config['log_save_path'],
-                log_status='INFO',
-                content=str(self.training_stamp) + " " + epoch_log_content
-            )
+            logging.info(str(self.training_stamp) + " " + epoch_log_content)
+            # write2log(
+            #     log_file_path=self.training_info_config['log_save_path'],
+            #     log_status='INFO',
+            #     content=str(self.training_stamp) + " " + epoch_log_content
+            # )
             if val_dice / len(self.val_dataloader) > best_val_dice:
                 # Save model with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
@@ -648,21 +661,23 @@ class SimpleTrainer(object):
                 dice,
                 dice_matrix
             )
-            write2log(
-                log_file_path=self.training_info_config['log_save_path'],
-                log_status='INFO',
-                content="Validation " + str(validation_time_log) + " " + val_log_content
-            )
-        # Write average dice and average dice matrix
+            logging.info("Validation " + str(validation_time_log) + " " + val_log_content)
+        #     write2log(
+        #         log_file_path=self.training_info_config['log_save_path'],
+        #         log_status='INFO',
+        #         content="Validation " + str(validation_time_log) + " " + val_log_content
+        #     )
+        # # Write average dice and average dice matrix
         avg_dice_info = "INFO", "Average dice={0}, average dice matrix={1}".format(
             avg_dice / len(img_path_list),
             avg_dice_matrix / len(img_path_list)
         )
-        write2log(
-            log_file_path=self.training_info_config['log_save_path'],
-            log_status='INFO',
-            content="Validation " + str(validation_time_log) + " " + avg_dice_info
-        )
+        logging.info("Validation " + str(validation_time_log) + " " + avg_dice_info)
+        # write2log(
+        #     log_file_path=self.training_info_config['log_save_path'],
+        #     log_status='INFO',
+        #     content="Validation " + str(validation_time_log) + " " + avg_dice_info
+        # )
         log_print("INFO", avg_dice_info)
 
 
