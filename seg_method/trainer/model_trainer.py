@@ -99,7 +99,7 @@ class SimpleTrainer(object):
         assert os.path.isdir(self.training_info_config['model_para_save_path']),\
             log_print("ERROR", "{0} is not exist!!!".format(self.training_info_config['model_para_save_path']))
 
-        # Make model1 parameter saving direction
+        # Make model parameter saving direction
         self.model_para_save_path = make_model_saving_dir(
             model_config=self.model_config,
             hyper_para_config=train_config['hyper_para_config'],
@@ -393,7 +393,7 @@ class SimpleTrainer(object):
             # )
 
             if val_dice / len(self.val_dataloader) > best_val_dice:
-                # Save model1 with better dice
+                # Save model1 with better dice on validation set
                 best_val_dice = val_dice / len(self.val_dataloader)
                 model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
                 torch.save({
@@ -406,7 +406,7 @@ class SimpleTrainer(object):
                     "channel_list": self.model_config['channel_list'],
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
-                log_print("INFO", "Best model1 saved!!!")
+                log_print("INFO", "Best model saved!!!")
 
 
             if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
@@ -543,7 +543,7 @@ class SimpleTrainer(object):
             #     content=str(self.training_stamp) + " " + epoch_log_content
             # )
             if val_dice / len(self.val_dataloader) > best_val_dice:
-                # Save model1 with better dice
+                # Save model with better dice on validation set
                 best_val_dice = val_dice / len(self.val_dataloader)
                 model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
                 torch.save({
