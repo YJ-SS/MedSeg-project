@@ -1,0 +1,172 @@
+2024-10-24 16:26 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-24 16:26 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-24 16:26 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-24 16:29 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-24 16:51 INFO: 2024-10-24 16:29:41 seg oasis4 EPOCH=0 train_seg_loss=0.87 train_dice=0.47 val_seg_loss=0.69 val_dice=0.60
+2024-10-24 17:13 INFO: 2024-10-24 16:29:41 seg oasis4 EPOCH=1 train_seg_loss=0.60 train_dice=0.62 val_seg_loss=0.53 val_dice=0.64
+2024-10-24 17:27 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-24 17:47 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=0 train_seg_loss=1.27 train_dice=0.43 val_seg_loss=1.10 val_dice=0.59
+2024-10-24 18:07 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=1 train_seg_loss=1.02 train_dice=0.63 val_seg_loss=0.93 val_dice=0.66
+2024-10-24 18:27 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=2 train_seg_loss=0.87 train_dice=0.69 val_seg_loss=0.79 val_dice=0.75
+2024-10-24 18:47 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=3 train_seg_loss=0.73 train_dice=0.80 val_seg_loss=0.67 val_dice=0.84
+2024-10-24 19:08 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=4 train_seg_loss=0.62 train_dice=0.86 val_seg_loss=0.57 val_dice=0.86
+2024-10-24 19:28 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=5 train_seg_loss=0.52 train_dice=0.88 val_seg_loss=0.48 val_dice=0.88
+2024-10-24 19:48 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=6 train_seg_loss=0.44 train_dice=0.89 val_seg_loss=0.40 val_dice=0.89
+2024-10-24 20:08 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=7 train_seg_loss=0.37 train_dice=0.90 val_seg_loss=0.34 val_dice=0.90
+2024-10-24 20:28 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=8 train_seg_loss=0.32 train_dice=0.91 val_seg_loss=0.29 val_dice=0.91
+2024-10-24 20:47 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=9 train_seg_loss=0.27 train_dice=0.91 val_seg_loss=0.25 val_dice=0.91
+2024-10-24 21:07 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=10 train_seg_loss=0.24 train_dice=0.92 val_seg_loss=0.22 val_dice=0.92
+2024-10-24 21:27 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=11 train_seg_loss=0.20 train_dice=0.92 val_seg_loss=0.19 val_dice=0.92
+2024-10-24 21:47 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=12 train_seg_loss=0.18 train_dice=0.93 val_seg_loss=0.17 val_dice=0.93
+2024-10-24 22:07 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=13 train_seg_loss=0.16 train_dice=0.93 val_seg_loss=0.15 val_dice=0.93
+2024-10-24 22:26 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=14 train_seg_loss=0.14 train_dice=0.94 val_seg_loss=0.13 val_dice=0.93
+2024-10-24 22:46 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=15 train_seg_loss=0.13 train_dice=0.94 val_seg_loss=0.12 val_dice=0.94
+2024-10-24 23:06 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=16 train_seg_loss=0.11 train_dice=0.94 val_seg_loss=0.11 val_dice=0.94
+2024-10-24 23:26 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=17 train_seg_loss=0.10 train_dice=0.94 val_seg_loss=0.10 val_dice=0.94
+2024-10-24 23:45 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=18 train_seg_loss=0.09 train_dice=0.94 val_seg_loss=0.09 val_dice=0.94
+2024-10-25 00:05 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=19 train_seg_loss=0.09 train_dice=0.94 val_seg_loss=0.08 val_dice=0.94
+2024-10-25 00:25 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=20 train_seg_loss=0.08 train_dice=0.94 val_seg_loss=0.08 val_dice=0.94
+2024-10-25 00:44 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=21 train_seg_loss=0.07 train_dice=0.95 val_seg_loss=0.07 val_dice=0.94
+2024-10-25 01:03 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=22 train_seg_loss=0.07 train_dice=0.95 val_seg_loss=0.07 val_dice=0.94
+2024-10-25 01:23 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=23 train_seg_loss=0.06 train_dice=0.95 val_seg_loss=0.06 val_dice=0.94
+2024-10-25 01:43 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=24 train_seg_loss=0.06 train_dice=0.95 val_seg_loss=0.06 val_dice=0.94
+2024-10-25 02:03 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=25 train_seg_loss=0.06 train_dice=0.95 val_seg_loss=0.06 val_dice=0.94
+2024-10-25 02:23 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=26 train_seg_loss=0.05 train_dice=0.95 val_seg_loss=0.06 val_dice=0.94
+2024-10-25 02:43 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=27 train_seg_loss=0.05 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 03:03 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=28 train_seg_loss=0.05 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 03:23 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=29 train_seg_loss=0.05 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 03:41 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=30 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 04:01 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=31 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 04:21 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=32 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.95
+2024-10-25 04:41 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=33 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.94
+2024-10-25 05:00 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=34 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.95
+2024-10-25 05:20 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=35 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.05 val_dice=0.95
+2024-10-25 05:40 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=36 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 06:00 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=37 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 06:19 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=38 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 06:39 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=39 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 06:59 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=40 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 07:19 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=41 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 07:38 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=42 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 07:58 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=43 train_seg_loss=0.04 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 08:17 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=44 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 08:37 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=45 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 08:56 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=46 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 09:16 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=47 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 09:36 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=48 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 09:56 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=49 train_seg_loss=0.03 train_dice=0.95 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 10:15 INFO: 2024-10-24 17:27:05 seg oasis4 EPOCH=50 train_seg_loss=0.03 train_dice=0.96 val_seg_loss=0.04 val_dice=0.95
+2024-10-25 16:27 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:28 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:29 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:31 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:35 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:39 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:40 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 16:55 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 17:01 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 17:04 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-25 17:06 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:36 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:45 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:49 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:52 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:55 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:56 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 10:59 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:01 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:02 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:08 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:11 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:12 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:13 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:16 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:20 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:21 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:24 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:25 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:26 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:30 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 11:36 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 15:51 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:00 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:01 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:02 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:06 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:07 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:09 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:10 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:15 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:20 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:22 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:25 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:31 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:32 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:33 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:35 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:36 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:46 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.00012024-10-28 16:48 WARNING: Training start!! Learning rate=0.0001 seg_w=1.0 rec_w=0.01 KL_w=0.0001 con_w=0.0001
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0388_MR1\aligned_norm.nii.gz dice=0.9519 dice_matrix=[0.9959890263024646, 0.9297726883456899, 0.9502716674579311, 0.959712349596497, 0.9679172760097841]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0389_MR1\aligned_norm.nii.gz dice=0.9530 dice_matrix=[0.9952114643445193, 0.9287358863094143, 0.9537500279186116, 0.9649306394054039, 0.964521418323427]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0390_MR1\aligned_norm.nii.gz dice=0.9550 dice_matrix=[0.9954404390670518, 0.9424875457170981, 0.9582482236475053, 0.9649527870287823, 0.9542449705832695]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0392_MR1\aligned_norm.nii.gz dice=0.9399 dice_matrix=[0.9946829273195696, 0.9398297417210513, 0.95436404116265, 0.9685223390521418, 0.8968523002421307]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0394_MR1\aligned_norm.nii.gz dice=0.9430 dice_matrix=[0.9942976963862231, 0.9336800518224725, 0.9624368242439543, 0.9660621506385579, 0.9096323445195281]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0395_MR1\aligned_norm.nii.gz dice=0.9259 dice_matrix=[0.9940424562438519, 0.9374416321537763, 0.9510085939231404, 0.9655268506195558, 0.8496595356817329]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0396_MR1\aligned_norm.nii.gz dice=0.9488 dice_matrix=[0.9952462810179864, 0.944629466725054, 0.9612381469136759, 0.9714987573210893, 0.9176850247965261]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0397_MR1\aligned_norm.nii.gz dice=0.9427 dice_matrix=[0.9952530077038799, 0.9471457033115978, 0.9572244303063138, 0.9702647664527927, 0.8959877889228085]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0398_MR1\aligned_norm.nii.gz dice=0.9422 dice_matrix=[0.9942339113439159, 0.9272728851983427, 0.9107175418742167, 0.9602779893200297, 0.9706725411763191]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0399_MR1\aligned_norm.nii.gz dice=0.9471 dice_matrix=[0.9950461092904505, 0.919543630754758, 0.9407940794079408, 0.9564008862349873, 0.9716865144180797]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0400_MR1\aligned_norm.nii.gz dice=0.9386 dice_matrix=[0.9958116268809171, 0.9144971399038166, 0.9249789474658301, 0.9514903865947548, 0.9632631683958499]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0401_MR1\aligned_norm.nii.gz dice=0.9491 dice_matrix=[0.9950784758176838, 0.9415285160737582, 0.9614053138192811, 0.9698886452009366, 0.923476303154219]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0402_MR1\aligned_norm.nii.gz dice=0.9434 dice_matrix=[0.993429067359611, 0.9200112818578382, 0.9328136398297382, 0.9540317009517961, 0.9666811628140367]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0403_MR1\aligned_norm.nii.gz dice=0.9432 dice_matrix=[0.9942257194712772, 0.9334909791276755, 0.9567805277707694, 0.9702917347193944, 0.9121901073417964]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0404_MR1\aligned_norm.nii.gz dice=0.9572 dice_matrix=[0.9956554717346783, 0.9414807589998226, 0.9504847796654584, 0.9690092781645319, 0.9679248151228192]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0405_MR1\aligned_norm.nii.gz dice=0.9288 dice_matrix=[0.9951569726088786, 0.8954491212592576, 0.9199793888078884, 0.9331611795973986, 0.9666730284163886]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0406_MR1\aligned_norm.nii.gz dice=0.9439 dice_matrix=[0.9933258628272043, 0.9303568079094336, 0.9514598032491235, 0.9641234030156709, 0.9294814682822523]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0407_MR1\aligned_norm.nii.gz dice=0.9549 dice_matrix=[0.9958472563412402, 0.9387716509907565, 0.9597757962790882, 0.9682443408799196, 0.9529809823824524]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0408_MR1\aligned_norm.nii.gz dice=0.9455 dice_matrix=[0.9948947424029237, 0.9427250061911931, 0.9579730295496482, 0.9716363670584102, 0.9097854551570045]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0409_MR1\aligned_norm.nii.gz dice=0.9518 dice_matrix=[0.9957549893046396, 0.9425829450731509, 0.9588563182391233, 0.9703433513710455, 0.9354063961572494]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0410_MR1\aligned_norm.nii.gz dice=0.9442 dice_matrix=[0.9931079382287156, 0.9272277483670934, 0.9554896580939761, 0.9688331788748955, 0.925406439273191]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0411_MR1\aligned_norm.nii.gz dice=0.9596 dice_matrix=[0.9963006728714529, 0.9420877221662085, 0.9575356171379141, 0.9684272399025947, 0.9705279298233103]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0413_MR1\aligned_norm.nii.gz dice=0.9433 dice_matrix=[0.9937438356396087, 0.926371525971783, 0.9517560496481872, 0.9635829030989046, 0.9315946180228395]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0415_MR1\aligned_norm.nii.gz dice=0.9455 dice_matrix=[0.9943373321145569, 0.9391435351936023, 0.9490170449795962, 0.9668164888249783, 0.9269198828620132]
+2024-10-28 16:48 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0416_MR1\aligned_norm.nii.gz dice=0.9503 dice_matrix=[0.994363247321636, 0.9366745231274565, 0.9600043289432203, 0.9692598197337157, 0.9352156591027195]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0417_MR1\aligned_norm.nii.gz dice=0.9471 dice_matrix=[0.9942819031897088, 0.932729508490292, 0.95330227758678, 0.965459599261781, 0.9370607387448074]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0418_MR1\aligned_norm.nii.gz dice=0.9456 dice_matrix=[0.9954131746368068, 0.9389766921345107, 0.9368866105853487, 0.9676047053706737, 0.9388943056303389]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0419_MR1\aligned_norm.nii.gz dice=0.9519 dice_matrix=[0.994200647491612, 0.9399440415758434, 0.958111870082995, 0.9708955691433429, 0.9387158785082661]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0420_MR1\aligned_norm.nii.gz dice=0.9537 dice_matrix=[0.9938652078504827, 0.9317767799480912, 0.9568326854908347, 0.9663114425859998, 0.9597758081334724]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0421_MR1\aligned_norm.nii.gz dice=0.9484 dice_matrix=[0.9941730225575015, 0.9355134779225444, 0.959997384956965, 0.969061301650445, 0.9291234723109582]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0422_MR1\aligned_norm.nii.gz dice=0.9414 dice_matrix=[0.9929145875614452, 0.9117684990039063, 0.9310742772487681, 0.960661352389762, 0.962143860533804]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0423_MR1\aligned_norm.nii.gz dice=0.9548 dice_matrix=[0.995938342449153, 0.9352350216971156, 0.9541321309744303, 0.9634034337904649, 0.9663018957810814]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0424_MR1\aligned_norm.nii.gz dice=0.9523 dice_matrix=[0.9961259029897848, 0.9282328711015229, 0.9494077997111218, 0.9614714329361442, 0.9699271040424122]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0425_MR1\aligned_norm.nii.gz dice=0.9470 dice_matrix=[0.9947563548416762, 0.9238916987861813, 0.9445903650461616, 0.9568304107085394, 0.9627483569936415]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0426_MR1\aligned_norm.nii.gz dice=0.9564 dice_matrix=[0.9959818303616826, 0.9402805878950986, 0.9587970737340615, 0.9670845821455064, 0.9592601351771867]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0428_MR1\aligned_norm.nii.gz dice=0.9473 dice_matrix=[0.9956083976499714, 0.9207905684939179, 0.9378961324537576, 0.9557022561755733, 0.9746209013681955]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0429_MR1\aligned_norm.nii.gz dice=0.9565 dice_matrix=[0.9957066541199024, 0.9452859123476398, 0.9560322854715378, 0.971184102087609, 0.9533729569093611]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0430_MR1\aligned_norm.nii.gz dice=0.9523 dice_matrix=[0.9959327707770494, 0.9331445733436997, 0.9473220142152066, 0.962434248268656, 0.9663611082500773]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0431_MR1\aligned_norm.nii.gz dice=0.9526 dice_matrix=[0.9948846324885694, 0.939590336142667, 0.9588098436936789, 0.966093026081001, 0.9457422887450866]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0432_MR1\aligned_norm.nii.gz dice=0.9555 dice_matrix=[0.9958504061114944, 0.9390701275013345, 0.9531886295813299, 0.9660719432848293, 0.9638335927156164]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0433_MR1\aligned_norm.nii.gz dice=0.9510 dice_matrix=[0.9948677882103402, 0.9425056600814791, 0.9419616845590424, 0.9673469590994646, 0.9522339922706926]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0434_MR1\aligned_norm.nii.gz dice=0.9434 dice_matrix=[0.994063369613712, 0.9285933348198151, 0.9433160231175141, 0.9611615981291997, 0.94069654396767]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0435_MR1\aligned_norm.nii.gz dice=0.9536 dice_matrix=[0.9950695076857511, 0.9433445632655655, 0.961577319013158, 0.9682178468356335, 0.9410652264833707]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0437_MR1\aligned_norm.nii.gz dice=0.9306 dice_matrix=[0.9941249937211096, 0.9330076086658462, 0.953459568783167, 0.9685402610424021, 0.8673755200826694]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0438_MR1\aligned_norm.nii.gz dice=0.9495 dice_matrix=[0.9946355541660392, 0.9333946515798232, 0.9543654501606287, 0.9623790217890595, 0.9478041251578504]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0439_MR1\aligned_norm.nii.gz dice=0.9470 dice_matrix=[0.9954613529879827, 0.9472473704807309, 0.963854935961882, 0.96838682882208, 0.9084104025306063]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0440_MR1\aligned_norm.nii.gz dice=0.8902 dice_matrix=[0.989900227005854, 0.8462933250624788, 0.8674922039624621, 0.9175602778208641, 0.9296423356797758]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0441_MR1\aligned_norm.nii.gz dice=0.9541 dice_matrix=[0.9960822785639146, 0.9363949504816298, 0.9512949077945033, 0.9628405953800001, 0.9657751657814513]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0442_MR1\aligned_norm.nii.gz dice=0.9448 dice_matrix=[0.9946994726267232, 0.9412731708882129, 0.9556841912263699, 0.9680114696224582, 0.9143537430845725]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0443_MR1\aligned_norm.nii.gz dice=0.9529 dice_matrix=[0.9954030711866002, 0.938081467239658, 0.9602636302239228, 0.9671335808782513, 0.9461530480665195]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0444_MR1\aligned_norm.nii.gz dice=0.9528 dice_matrix=[0.9949325365682827, 0.9390587109384504, 0.9599474317428126, 0.9698029678698101, 0.9424728677009122]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0445_MR1\aligned_norm.nii.gz dice=0.9523 dice_matrix=[0.9959486936283282, 0.9337902894526082, 0.9408950572755864, 0.9595538853645378, 0.9750059787952063]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0446_MR1\aligned_norm.nii.gz dice=0.9535 dice_matrix=[0.9958455692410889, 0.9313911431322369, 0.9576845567174302, 0.9650546290265095, 0.9597584228148122]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0447_MR1\aligned_norm.nii.gz dice=0.9517 dice_matrix=[0.9954438533408398, 0.9375851364333749, 0.9440041753079976, 0.9643811179994921, 0.9609353615140969]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0448_MR1\aligned_norm.nii.gz dice=0.9391 dice_matrix=[0.9941161555013773, 0.936666383742361, 0.9624708253766179, 0.9694086415982013, 0.8876769109105288]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0449_MR1\aligned_norm.nii.gz dice=0.9497 dice_matrix=[0.9936581020106663, 0.9218915454494789, 0.9545612608788452, 0.9635824815886539, 0.9586033231132324]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0450_MR1\aligned_norm.nii.gz dice=0.9372 dice_matrix=[0.9928931058348885, 0.9268246958683994, 0.9531373465615308, 0.9666089619264455, 0.9023026150047866]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0451_MR1\aligned_norm.nii.gz dice=0.9574 dice_matrix=[0.9960350409580279, 0.9391868202435036, 0.954754649907954, 0.965565523944568, 0.9700918020963177]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0452_MR1\aligned_norm.nii.gz dice=0.9571 dice_matrix=[0.9959967862138551, 0.940079143277145, 0.9543026358537897, 0.9649471164034898, 0.969097651421508]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0453_MR1\aligned_norm.nii.gz dice=0.9466 dice_matrix=[0.9950723579416851, 0.9236504966442198, 0.944349945547892, 0.9574526493780336, 0.9607775153314408]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0454_MR1\aligned_norm.nii.gz dice=0.9459 dice_matrix=[0.9954991080345841, 0.9236978561504049, 0.9407542773854809, 0.9574164466138539, 0.9617009262577233]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0455_MR1\aligned_norm.nii.gz dice=0.9371 dice_matrix=[0.9930531361271642, 0.9158902614965476, 0.9521164900945414, 0.9605729428382963, 0.919885195145653]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0456_MR1\aligned_norm.nii.gz dice=0.9547 dice_matrix=[0.9952589731122703, 0.9379607894856286, 0.9529057085236861, 0.9661750838510444, 0.961822597526649]
+2024-10-28 16:49 INFO: Validation 2024-10-28 16:48:31 img_path=E:\DataSet\neurite-oasis.v1.0\OASIS_OAS1_0457_MR1\aligned_norm.nii.gz dice=0.9543 dice_matrix=[0.9953957153312111, 0.9358600863739985, 0.9592119193327653, 0.9658721550638069, 0.9560877987453656]
