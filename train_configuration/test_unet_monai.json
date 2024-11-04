@@ -41,7 +41,7 @@
     "dataset_num_class": 4,
     "dataset_root_path": "E:\\DataSet\\neurite-oasis.v1.0",
     "log_save_path": "../training_record/log/train_3D_UNet_test.log",
-    "model_para_save_path": "../training_record/model",
+    "model_para_save_path": "../training_record/model_para",
     "log_stamp_str": " seg oasis4"
   }
 }

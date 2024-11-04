@@ -99,7 +99,7 @@ class SimpleTrainer(object):
         assert os.path.isdir(self.training_info_config['model_para_save_path']),\
             log_print("ERROR", "{0} is not exist!!!".format(self.training_info_config['model_para_save_path']))
 
-        # Make model parameter saving direction
+        # Make model1 parameter saving direction
         self.model_para_save_path = make_model_saving_dir(
             model_config=self.model_config,
             hyper_para_config=train_config['hyper_para_config'],
@@ -138,7 +138,7 @@ class SimpleTrainer(object):
 
         log_print("INFO", "Use device: {0}".format(self.device))
 
-        # Build model
+        # Build model1
         if self.model_name == "dual_MBConv_VAE":
             self.net = MBConvNet(
                 in_channel=self.model_config['in_channel'],
@@ -200,7 +200,7 @@ class SimpleTrainer(object):
 
         # Make log saving direction
 
-        # Make model parameter saving direction
+        # Make model1 parameter saving direction
 
 
     def get_dataset_(
@@ -391,8 +391,9 @@ class SimpleTrainer(object):
             #     log_status='INFO',
             #     content=str(self.training_stamp) + " " + epoch_log_content
             # )
+
             if val_dice / len(self.val_dataloader) > best_val_dice:
-                # Save model with better dice
+                # Save model1 with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
                 model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
                 torch.save({
@@ -405,7 +406,7 @@ class SimpleTrainer(object):
                     "channel_list": self.model_config['channel_list'],
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
-                log_print("INFO", "Best model saved!!!")
+                log_print("INFO", "Best model1 saved!!!")
 
 
             if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
@@ -463,7 +464,7 @@ class SimpleTrainer(object):
 
     def train_normal_Net_(self):
         '''
-        Can be used to train any segmentation model with only one output
+        Can be used to train any segmentation model1 with only one output
         :return: None
         '''
         checkpoint_cnt = 0.
@@ -542,7 +543,7 @@ class SimpleTrainer(object):
             #     content=str(self.training_stamp) + " " + epoch_log_content
             # )
             if val_dice / len(self.val_dataloader) > best_val_dice:
-                # Save model with better dice
+                # Save model1 with better dice
                 best_val_dice = val_dice / len(self.val_dataloader)
                 model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
                 torch.save({
@@ -552,7 +553,7 @@ class SimpleTrainer(object):
                     "num_class": self.model_config['num_class'],
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
-                log_print("INFO", "Best model saved!!!")
+                log_print("INFO", "Best model1 saved!!!")
 
             if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
                 # Save checkpoint
@@ -579,8 +580,8 @@ class SimpleTrainer(object):
 
     def load_model_info_(self):
         '''
-        Load model parameter based on json file
-        :return: Model information dict, include model parameter
+        Load model1 parameter based on json file
+        :return: Model information dict, include model1 parameter
         '''
         model_save_path = os.path.join(
             self.model_para_save_path,
@@ -593,7 +594,7 @@ class SimpleTrainer(object):
         '''
         Get a segmentation of the input image
         :param val_img_path:
-        :return: A SimpleITK Image predicted by model, dice score and dice matrix
+        :return: A SimpleITK Image predicted by model1, dice score and dice matrix
         '''
         # Get original image information to restore image
         # Spacing, Origin, Direction, Size and Processed Image
@@ -635,7 +636,7 @@ class SimpleTrainer(object):
 
     def evaluate(self, img_path_list=None, label_path_list=None):
         '''
-        Evaluate model, product predict segmentation.
+        Evaluate model1, product predict segmentation.
         :return:
         '''
         if img_path_list is None and label_path_list is None:
