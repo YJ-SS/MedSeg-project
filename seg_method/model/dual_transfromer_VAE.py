@@ -22,4 +22,3 @@ if __name__ == '__main__':
 
     ).cuda()
     print(block(x).shape)
-
