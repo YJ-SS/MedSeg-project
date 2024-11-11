@@ -224,9 +224,7 @@ class MBConvNet(nn.Module):
         return mu + eps * std
 
     def forward(self, x) -> Tuple[Any, Any, Any, Any, Any]:
-
         self.encode_outputs = []
-
         for i, block in enumerate(self.encode_blocks):
             if i < len(self.encode_blocks) - 1:
                 x = block(x)
@@ -260,15 +258,16 @@ class MBConvNet(nn.Module):
 
 
 if __name__ == '__main__':
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     net = MBConvNet(
         in_channel=1,
         num_class=5,
-        channel_list=[64, 128, 256, 512],
+        channel_list=[32, 64, 128, 256],
         residual=True,
-        device='cpu',
+        device=device,
         MBConv=True
     )
-    x = torch.randn(([1,1,32, 32, 32]))
+    x = torch.randn(([1, 1,32, 32, 32])).to(device)
 
     with torch.no_grad():
         pre_label, recon, mu, logvar, latent = net(x)
