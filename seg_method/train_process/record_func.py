@@ -56,6 +56,16 @@ def make_model_saving_dir(model_config, hyper_para_config, model_para_save_path)
             hyper_para_config['contras_weight'],
             hyper_para_config['lr']
         )
+    elif model_config['model_name'] == 'dual_transformer_VAE':
+        dir_name = "{0} in_c={1} num_c={2} embed_dim={3} p_size={4} w_size={5} lr={6}".format(
+            model_config['model_name'],
+            model_config['in_channel'],
+            model_config['num_class'],
+            model_config['embed_dim'],
+            model_config['patch_size'],
+            model_config['window_size'],
+            hyper_para_config['lr']
+        )
     else:
         dir_name = "{0} in_c={1} num_c={2} c_list={3} lr={4}".format(
             model_config['model_name'],

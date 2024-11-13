@@ -267,11 +267,15 @@ if __name__ == '__main__':
         device=device,
         MBConv=True
     )
-    x = torch.randn(([1, 1,32, 32, 32])).to(device)
+    x = torch.randn(([1, 1, 224, 192, 160])).to(device)
 
     with torch.no_grad():
         pre_label, recon, mu, logvar, latent = net(x)
         print(pre_label.shape)
+        for y in net(x):
+            print(y.shape)
+
+
 
 
 

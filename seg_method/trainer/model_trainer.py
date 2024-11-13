@@ -12,6 +12,7 @@ sys.path.append("../model")
 sys.path.append("../../data_process")
 sys.path.append("../train_process")
 from dual_MBConv_VAE import MBConvNet
+from dual_transfromer_VAE import transNet
 import json
 import torch
 from data_process.get_data import get_data_path_list
@@ -148,6 +149,14 @@ class SimpleTrainer(object):
                 MBConv=self.model_config['MBConv'],
                 device=self.device
             )
+        elif self.model_name == 'dual_transformer_VAE':
+            self.net = transNet(
+                in_channels=self.model_config['in_channel'],
+                num_class=self.model_config['num_class'],
+                embed_dim=self.model_config['embed_dim'],
+                patch_size=self.model_config['patch_size'],
+                window_size=self.model_config['window_size'],
+            ).to(self.device)
         elif self.model_name == "monai_3D_unet":
             self.net = UNet(
                 spatial_dims=3,
@@ -246,7 +255,7 @@ class SimpleTrainer(object):
         )
         return dataloader
 
-    def train_dual_MBConv_VAE_(self):
+    def train_dual_VAE_(self):
         checkpoint_cnt = 0.
         best_val_dice = 0.
 
@@ -428,7 +437,16 @@ class SimpleTrainer(object):
                 log_print("INFO", "Checkpoint saved!!!")
 
 
-    def get_loss_dict_dual_VAE_(self, seg_gt, recon_img, pre_label, pre_recon, mu, logvar, latent_var):
+    def get_loss_dict_dual_VAE_(
+            self,
+            seg_gt,
+            recon_img,
+            pre_label,
+            pre_recon,
+            mu,
+            logvar,
+            latent_var
+    ):
         '''
         get loss dict when training dual VAE
         :param seg_img:
@@ -447,7 +465,15 @@ class SimpleTrainer(object):
         recon_loss = recon_loss_fn(recon_img, pre_recon)
         recon_loss = (recon_loss * self.recon_region_weights).mean()
         kl_loss = KL_divergence(mu=mu, logvar=logvar)
-        contrastive_loss = self_contrastive_loss(latent_var, avg_pool=True)
+        contrastive_loss = torch.tensor(0.0)
+        if self.hyper_para_config['calcu_contras_loss']:
+            '''
+            When use dual_transformer_VAE, the latent shape is [1, 128, 7, 6, 5] on OASIS4 dataset,
+            which will cause error when calculating contrastive loss.
+            This BUG can be fixed if the input image is reshaped or reduce the number of layers in 
+            dual_transformer_VAE
+            '''
+            contrastive_loss = self_contrastive_loss(latent_var, avg_pool=True)
         total_loss = seg_loss * self.hyper_para_config['seg_weight']\
                     + recon_loss * self.hyper_para_config['recon_weight']\
                     + kl_loss * self.hyper_para_config['kl_weight']\
@@ -571,8 +597,8 @@ class SimpleTrainer(object):
                 log_print("INFO", "Checkpoint saved!!!")
 
     def train(self):
-        if self.model_name == 'dual_MBConv_VAE':
-            self.train_dual_MBConv_VAE_()
+        if self.model_name == 'dual_MBConv_VAE' or self.model_name == 'dual_transformer_VAE':
+            self.train_dual_VAE_()
         elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
             self.train_normal_Net_()
         else:
