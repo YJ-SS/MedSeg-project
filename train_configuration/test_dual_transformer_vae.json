@@ -11,12 +11,12 @@
     "window_size": 7
   },
   "hyper_para_config":{
-    "epoch": 500,
+    "epoch": 200,
     "decay": 1e-8,
     "label_mapping": true,
     "label_discard_list": null,
     "label_merge_list": null,
-    "lr" : 1e-4,
+    "lr" : 3e-4,
     "cutmix" : true,
     "save_checkpoint_per_epoch": 5,
     "calcu_contras_loss": false,
