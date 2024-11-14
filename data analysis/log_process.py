@@ -1,10 +1,10 @@
 import re
-from typing import Union, List, Any
+from typing import Union, List, Any, Dict
 
 from matplotlib import pyplot as plt, ticker
 
 
-def extract_log_by_time_stamp(log_data, logstamp)-> Union[list[Any], list[str]]:
+def extract_log_by_time_stamp(log_data, logstamp)-> Union[List[Any], List[str]]:
     '''
     Use logstamp to extract target logs
     :param log_data:
@@ -15,7 +15,7 @@ def extract_log_by_time_stamp(log_data, logstamp)-> Union[list[Any], list[str]]:
     matches = pattern.findall(log_data)
     return matches
 
-def extract_fields(log, fields)->dict[str, float]:
+def extract_fields(log, fields)-> Dict[str, float]:
     '''
     Extract field's value from log
     :param log: "epoch=2 total_loss=0.32"
@@ -32,7 +32,7 @@ def extract_fields(log, fields)->dict[str, float]:
 
 
 
-def extract_data_from_log(log_path, logstamp, fields)->dict[str,list[float]]:
+def extract_data_from_log(log_path, logstamp, fields)-> Dict[str, List[float]]:
     '''
     Get information during training, return as a dict
     :param log_path:
