@@ -6,4 +6,3 @@ if __name__ == '__main__':
     # Evaluate model1
     # Trainer.evaluate()
 
-
