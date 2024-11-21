@@ -77,9 +77,6 @@ class myDataSet(Dataset):
             label = sitk.GetArrayFromImage(label)
             # 将label中的数据类型转换成int16.若为uint16会导致dataloader报错
             label = label.astype(np.int16)
-
-        # print(type(img[0][0][0]), type(label[0][0][0]))
-
         # Make label continuous
         if self.has_label and self.map:
             label = label_mapping(label, discard=self.discard, merge=self.merge)

@@ -34,5 +34,6 @@ def get_dice(y_pred, y_true, num_clus)->tuple[float,list[float]]:
                 # Do not contain label 0
                 avg_dice += dice_matrix[i]
                 cnt += 1
-    avg_dice /= cnt
+    if cnt != 0:
+        avg_dice /= cnt
     return avg_dice, dice_matrix

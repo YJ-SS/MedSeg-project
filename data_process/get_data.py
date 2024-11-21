@@ -17,7 +17,10 @@ def get_data_path_list(dataset_name, root_path, num_class):
             num_class=num_class
         )
     elif dataset_name == 'cranial':
-        pass
+        img_path_list, label_path_list = get_cranial_CT_path_list(
+            root_path=root_path,
+        )
+
     return img_path_list, label_path_list
 
 
@@ -32,8 +35,15 @@ def get_cranial_CT_path_list(root_path: str)->tuple[list[str], list[str]]:
     for file_name in file_list:
         file_path = os.path.join(root_path, file_name)
         if os.path.isdir(file_path):
-            img_path = os.path.join(file_path, "Brain_w_bone_cropped.nii.gz")
-            label_path = os.path.join(file_path, "Cranial_Head_bone_predict_mask_240830.mha")
+            img_path = os.path.join(file_path, "Brain_w_bone_cropped.mha")
+            '''
+            Cranial_Head_bone_gt为矫正后真实值，但是只有1号2号图像有此文件
+            Cranial_Head_bone_predict_mask_240830为根据开源模型预测值，所有图像都有此文件
+            这里做以区分
+            '''
+            label_path = os.path.join(file_path, "Cranial_Head_bone_gt.mha")
+            if not os.path.exists(label_path):
+                label_path = os.path.join(file_path, "Cranial_Head_bone_predict_mask_240830.mha")
             if os.path.isfile(img_path) and os.path.isfile(label_path):
                 img_path_list.append(img_path)
                 label_path_list.append(label_path)
@@ -73,5 +83,6 @@ def get_oasis_MRI_path_list(root_path: str, num_class=35)->tuple[list[str], list
     return img_path_list, label_path_list
 
 if __name__ == '__main__':
-    img_path_list, label_path_list = get_oasis_MRI_path_list(root_path="E:\\DataSet\\neurite-oasis.v1.0")
+    img_path_list, label_path_list = get_cranial_CT_path_list(root_path="E:\\DataSet\\brainsegNew\\CT_0_2996\\2y")
     print(len(img_path_list),len(label_path_list))
+    print(img_path_list[:5], label_path_list[:5])

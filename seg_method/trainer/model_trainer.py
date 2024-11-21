@@ -6,7 +6,7 @@ import SimpleITK as sitk
 import numpy as np
 from torch import optim
 from tqdm import tqdm
-from data_process_method import resample
+from data_process_method import resample, cut_mix
 
 sys.path.append("../model")
 sys.path.append("../../data_process")
@@ -27,6 +27,7 @@ import warnings
 import torch.nn as nn
 from datetime import datetime
 from monai.networks.nets import UNet, SwinUNETR
+from train_process.early_stop import EarlyStopping
 warnings.filterwarnings("ignore")
 
 
@@ -38,6 +39,7 @@ class SimpleTrainer(object):
         self.model_config = train_config['model_config']
         self.hyper_para_config = train_config['hyper_para_config']
         self.training_info_config = train_config['training_info_config']
+        self.validation_info_config = train_config['validation_info_config']
         self.model_name = self.model_config['model_name']
         self.net = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -56,6 +58,7 @@ class SimpleTrainer(object):
         self.sup_dataloader = None
         self.unsup_dataloader = None
         self.val_dataloader = None
+
 
         # Initialize log file
         logging.basicConfig(
@@ -103,8 +106,17 @@ class SimpleTrainer(object):
         # Make model parameter saving direction
         self.model_para_save_path = make_model_saving_dir(
             model_config=self.model_config,
-            hyper_para_config=train_config['hyper_para_config'],
+            hyper_para_config=self.hyper_para_config,
+            training_info_config=self.training_info_config,
             model_para_save_path=self.training_info_config['model_para_save_path']
+        )
+
+        # Set early stopping
+        self.early_stop_training = EarlyStopping(
+            patience=self.hyper_para_config['patience'],
+            model_config=self.model_config,
+            model_save_path=self.model_para_save_path,
+            mode='min'
         )
 
         # Get data path
@@ -207,22 +219,20 @@ class SimpleTrainer(object):
         )
         log_print("INFO", "Validation dataloader length: {0}".format(len(self.val_dataloader)))
 
-        # Make log saving direction
-
-        # Make model1 parameter saving direction
 
 
     def get_dataset_(
             self,
             img_path_list,
             label_path_list,
+            stage,
             transform2both,
             transform2img
     ):
         dataset = myDataSet(
             img_paths=img_path_list,
             label_paths=label_path_list,
-            cutmix=self.hyper_para_config['cutmix'],
+            cutmix=self.hyper_para_config['cutmix'] if stage == 'supervise' else False,
             map=self.hyper_para_config['label_mapping'],
             discard=self.hyper_para_config['label_discard_list'],
             merge=self.hyper_para_config['label_merge_list'],
@@ -244,6 +254,7 @@ class SimpleTrainer(object):
         dataset = self.get_dataset_(
             img_path_list=img_path_list,
             label_path_list=label_path_list,
+            stage=stage,
             transform2both=transform2both,
             transform2img=transform2img
         )
@@ -395,29 +406,7 @@ class SimpleTrainer(object):
                 )
             log_print("CRITICAL", epoch_log_content)
             logging.info(str(self.training_stamp) + " " + epoch_log_content)
-            # write2log(
-            #     log_file_path=self.training_info_config['log_save_path'],
-            #     log_status='INFO',
-            #     content=str(self.training_stamp) + " " + epoch_log_content
-            # )
-
-            if val_dice / len(self.val_dataloader) > best_val_dice:
-                # Save model1 with better dice on validation set
-                best_val_dice = val_dice / len(self.val_dataloader)
-                model_save_path = os.path.join(self.model_para_save_path, "{0} best.pth".format(self.model_config['model_name']))
-                torch.save({
-                    'epoch': epoch,
-                    "model_name": self.model_config['model_name'],
-                    "in_channel": self.model_config['in_channel'],
-                    "num_class": self.model_config['num_class'],
-                    "residual": self.model_config['residual'],
-                    "MBConv": self.model_config['MBConv'],
-                    "channel_list": self.model_config['channel_list'],
-                    'model_state_dict': self.net.state_dict()
-                }, model_save_path)
-                log_print("INFO", "Best model saved!!!")
-
-
+            # Save checkpoint and best model
             if checkpoint_cnt % self.hyper_para_config['save_checkpoint_per_epoch'] == 0:
                 # Save checkout point
                 model_save_path = os.path.join(
@@ -435,6 +424,16 @@ class SimpleTrainer(object):
                     'model_state_dict': self.net.state_dict()
                 }, model_save_path)
                 log_print("INFO", "Checkpoint saved!!!")
+
+            early_stop_flag = self.early_stop_training.check_and_early_stop(
+                epoch=epoch,
+                net=self.net,
+                value=train_total_loss / len(self.unsup_dataloader),
+            )
+            if early_stop_flag:
+                log_print("INFO", "Early stop training!!!")
+                return
+
 
 
     def get_loss_dict_dual_VAE_(
@@ -609,9 +608,20 @@ class SimpleTrainer(object):
         Load model1 parameter based on json file
         :return: Model information dict, include model1 parameter
         '''
-        model_save_path = os.path.join(
-            self.model_para_save_path,
-            "{0} best.pth".format(self.model_config['model_name']))
+        model_save_path = ""
+        if self.validation_info_config['model_para_file_name'] is None:
+            # 没有显式指定用什么模型，默认用best模型
+            model_save_path = os.path.join(
+                self.model_para_save_path,
+                "{0} best.pth".format(self.model_config['model_name']))
+        else:
+            model_save_path = os.path.join(
+                self.model_para_save_path,
+                self.validation_info_config['model_para_file_name']
+            )
+        assert os.path.exists(model_save_path),\
+        log_print("ERROR", "Validation model {} is not exist!!!".format(model_save_path))
+        log_print("INFO", "Validation model path={0}".format(model_save_path))
         model_info_dict = torch.load(model_save_path)
         return model_info_dict
 
@@ -675,7 +685,8 @@ class SimpleTrainer(object):
         avg_dice_matrix = np.array([0. for i in range(self.model_config['num_class'])])
         validation_time = datetime.now().strftime("%Y-%m-%d")
         validation_time_log = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        predict_mask_name = self.model_name + " pre_mask " + str(validation_time)
+        predict_mask_name = self.model_name + " " \
+                            + self.training_info_config['dataset_name'] + " pre_mask " + str(validation_time)
         for img_path, label_path in tqdm(zip(img_path_list, label_path_list), total=len(img_path_list)):
             pre_mask, dice, dice_matrix = self.evaluate_one_(self.net, img_path, label_path)
             avg_dice += dice
@@ -699,13 +710,13 @@ class SimpleTrainer(object):
             avg_dice / len(img_path_list),
             avg_dice_matrix / len(img_path_list)
         )
-        logging.info("Validation " + str(validation_time_log) + " " + avg_dice_info)
+        logging.info("Validation " + str(validation_time_log) + " " + str(avg_dice_info))
         # write2log(
         #     log_file_path=self.training_info_config['log_save_path'],
         #     log_status='INFO',
         #     content="Validation " + str(validation_time_log) + " " + avg_dice_info
         # )
-        log_print("INFO", avg_dice_info)
+        log_print("INFO", str(avg_dice_info))
 
 
 

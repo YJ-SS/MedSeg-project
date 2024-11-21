@@ -1,14 +1,11 @@
 {
   "model_config": {
-    "model_name" : "dual_transformer_VAE",
+    "model_name" : "dual_MBConv_VAE",
     "in_channel" : 1,
-    "num_class" : 5,
+    "num_class" : 6,
     "residual" : true,
     "MBConv": true,
-    "channel_list": [16, 32, 64, 128],
-    "embed_dim": 16,
-    "patch_size": 2,
-    "window_size": 7
+    "channel_list": [16, 32, 64, 128]
   },
   "hyper_para_config":{
     "epoch": 200,
@@ -17,32 +14,34 @@
     "label_discard_list": null,
     "label_merge_list": null,
     "lr" : 1e-4,
-    "cutmix" : true,
+    "cutmix" : false,
     "save_checkpoint_per_epoch": 5,
-    "calcu_contras_loss": false,
     "patience": 30,
     "recon_img_get_num": null,
     "seg_weight": 1.0,
     "recon_weight": 1e-2,
-    "kl_weight": 1e-4,
-    "contras_weight": 1e-4,
+    "kl_weight": 1e-5,
+    "calcu_contras_loss": true,
+    "contras_weight": 1e-5,
     "region_retain_weight": 0.9,
-    "data_resolution": [224,192,160],
-    "resize": null,
+    "data_resolution": [329, 335, 202],
+    "resize": [160, 160, 160],
     "sup_data_num": 2,
     "unsup_data_num": 128,
     "val_data_num": 64,
     "batch_size": 1,
     "prefetch_factor": 8,
     "num_workers": 8
-
   },
   "training_info_config": {
-    "dataset_name": "oasis",
+    "dataset_name": "cranial",
     "dataset_num_class": 4,
-    "dataset_root_path": "E:\\DataSet\\neurite-oasis.v1.0",
-    "log_save_path": "../training_record/log/train_dual_transformer_VAE.log",
+    "dataset_root_path": "E:\\DataSet\\brainsegNew\\CT_0_2996\\2y",
+    "log_save_path": "../training_record/log/train_dual_MBConv_VAE.log",
     "model_para_save_path": "../training_record/model_para",
-    "log_stamp_str": " seg oasis4"
+    "log_stamp_str": " seg cranial"
+  },
+  "validation_info_config": {
+    "model_para_file_name": "dual_MBConv_VAE checkpoint69.pth"
   }
 }

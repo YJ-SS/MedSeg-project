@@ -16,7 +16,7 @@ class EarlyStopping(object):
         else:
             log_print('ERROR', "Parameter 'mode' must be 'min' or 'max', current  'model' is {0}.".format(mode))
 
-    def save_model(self, epoch: int, net: torch.nn.Module):
+    def save_model_(self, epoch: int, net: torch.nn.Module):
         '''
         Save best model and record current epoch
         :param net:
@@ -25,7 +25,7 @@ class EarlyStopping(object):
         '''
         model_save_path = os.path.join(
             self.model_save_path,
-            "{0} best{1}.pth".format(self.model_config['model_name'], epoch)
+            "{0} best.pth".format(self.model_config['model_name'])
         )
         torch.save(
             {
@@ -46,15 +46,14 @@ class EarlyStopping(object):
                 # Record smaller value
                 self.record_val = value
                 log_print("INFO", "Update best record, current record={0}".format(self.record_val))
-                # Do not early stop
+                # Do not early stop, save model parameter
+                self.save_model_(epoch, net)
                 return False
             elif self.record_val <= value:
                 self.counter += 1
                 log_print("INFO", "Early stopping... {0}/{1}".format(self.counter, self.patience))
                 # counter >= patience, return True to stop training
                 if self.counter >= self.patience:
-                    # Save model parameter
-                    self.save_model(epoch, net)
                     log_print("INFO", "Early stop!!!")
                     return True
                 return False
@@ -65,12 +64,13 @@ class EarlyStopping(object):
                 # Record bigger value
                 self.record_val = value
                 log_print("INFO", "Update best record, current record={0}".format(self.record_val))
+                # Update model parameter
+                self.save_model_(epoch, net)
                 return False
             elif self.record_val >= value:
                 self.counter += 1
                 log_print("INFO", "Early stopping... {0}/{1}".format(self.counter, self.patience))
                 if self.counter >= self.patience:
-                    self.save_model(epoch, net)
                     log_print("INFO", "Early stop!!!")
                     return True
                 return False

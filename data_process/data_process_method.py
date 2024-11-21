@@ -54,7 +54,10 @@ def get_dataloader_transform(stage, resize=None):
             ScaleIntensity(minv=0., maxv=1.)
         ]
         if resize is not None:
-            transform2both_list.insert(2, Resize(spatial_size=resize, mode='area'))
+            transform2both_list.insert(
+                2,
+                Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
+            )
     elif stage == 'validation':
         transform2img_list = [
             ScaleIntensity(minv=0., maxv=1.)
@@ -278,14 +281,15 @@ def cut_mix(
 
     # Set image1 and image2 to the same resolution
     if resize is not None:
-        # If need resize before cutmix
+        # If you need resize before cutmix
         transform = Compose([
             ToTensor(),
             AddChanneld(keys=['image', 'label']),
             Resized(keys=['image', 'label'], spatial_size=resize, mode=['area', 'nearest'])
         ])
+        # print("!!!!cut_mix resize=", resize)
     else:
-        # Do not need resize
+        # Do not need to resize
         transform = Compose([
             ToTensor(),
             AddChanneld(keys=['image', 'label'])
@@ -327,6 +331,7 @@ def cut_mix(
     mask1[x:x + d, y:y + h, z:z + w] = 0
     mask2 = torch.zeros_like(img1)
     mask2[x:x + d, y:y + h, z:z + w] = 1
+    # print("img1 shape={0}, img2 shape={1}!!!".format(img1.shape, img2.shape))
     # CutMix image1 and label1
     mix_img1 = img1 * mask1 + img2 * mask2
     mix_label1 = label1 * mask1 + label2 * mask2

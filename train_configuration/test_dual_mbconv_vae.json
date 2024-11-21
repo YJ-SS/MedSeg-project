@@ -30,7 +30,8 @@
     "val_data_num": 64,
     "batch_size": 1,
     "prefetch_factor": 8,
-    "num_workers": 8
+    "num_workers": 8,
+    "calcu_contras_loss": true
 
   },
   "training_info_config": {
