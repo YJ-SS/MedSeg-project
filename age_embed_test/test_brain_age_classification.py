@@ -62,6 +62,7 @@ def train():
 
 
 
+
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # net = ResNet(
 #     block=ResNetBlock,
