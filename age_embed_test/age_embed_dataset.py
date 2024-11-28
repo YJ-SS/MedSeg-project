@@ -1,6 +1,8 @@
 from torch.utils.data import Dataset
-from monai.transforms import apply_transform, Resized
+from monai.transforms import apply_transform
 import SimpleITK as sitk
+import torch
+
 
 class myDataset(Dataset):
     def __init__(
@@ -22,6 +24,7 @@ class myDataset(Dataset):
         img = sitk.GetArrayFromImage(img)
         label = self.label_list[item]
         img = apply_transform(self.transform, img)
+        label = torch.tensor(label)
         return img, label
 
 
