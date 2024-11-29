@@ -49,6 +49,17 @@ def get_transform(spatial_size:Union[Sequence[int]]):
     ]
     return Compose(transform_list)
 
+def get_acc_count(pre_label, label):
+    '''
+
+    :param pre_label: [B,C]
+    :param label: [B]
+    :return:
+    '''
+    # [B,C] -> [B]
+    pre_label = torch.argmax(pre_label, dim=-1).squeeze()
+    return (pre_label == label).sum()
+
 def split_train_and_val(
         img_path_list_2y,
         label_list_2y,
@@ -121,37 +132,50 @@ def train():
         label_list=train_label_list,
         transform=transform
     )
-    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True, num_workers=8, prefetch_factor=16)
 
     val_dataset = myDataset(
         img_path_list=val_img_path_list,
         label_list=val_label_list,
         transform=transform
     )
-    val_loader = DataLoader(val_dataset, batch_size=2, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=2, shuffle=True, num_workers=8, prefetch_factor=16)
     loss_fn = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, weight_decay=1e-7)
     for epoch in range(200):
         train_loss = 0.
+        train_acc_cnt = 0
+        train_total_cnt = 0
         val_loss = 0.
+        val_acc_cnt = 0
+        val_total_cnt = 0
         net.train()
+        log_print("INFO", "Training---")
         for img, label in tqdm(train_loader):
             with torch.amp.autocast(device_type=str(device), dtype=torch.float16):
                 img, label = img.to(device), label.to(device)
                 pre_label = net(img)
                 loss = loss_fn(pre_label, label)
+                train_acc_cnt += get_acc_count(pre_label, label)
+                train_total_cnt += len(label)
                 train_loss += loss.item()
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
         net.eval()
-        for img, label in tqdm(val_loader):
-            with torch.autocast(device_type=str(device), dtype=torch.float16):
-                img, label = img.to(device), label.to(device)
-                pre_label = net(img)
-                loss = loss_fn(pre_label, label)
-                val_loss += loss.item()
+        log_print("INFO", "Validation---")
+        with torch.no_grad():
+            for img, label in tqdm(val_loader):
+                with torch.autocast(device_type=str(device), dtype=torch.float16):
+                    img, label = img.to(device), label.to(device)
+                    pre_label = net(img)
+                    loss = loss_fn(pre_label, label)
+                    val_loss += loss.item()
+                    val_acc_cnt += get_acc_count(pre_label, label)
+                    val_total_cnt += len(label)
+
+
 
 
 
