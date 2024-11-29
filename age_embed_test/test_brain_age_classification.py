@@ -3,6 +3,9 @@ from typing import Union, Sequence
 from monai.networks.nets import ResNet, ResNetBlock
 import torch
 import os
+
+from torch import dtype
+
 from seg_method.train_process.record_func import log_print
 import SimpleITK as sitk
 from monai.transforms import Compose, Resized, Resize, apply_transform, ToTensord, ToTensor, AddChannel, ScaleIntensity
@@ -129,28 +132,26 @@ def train():
     loss_fn = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, weight_decay=1e-7)
     for epoch in range(200):
+        train_loss = 0.
+        val_loss = 0.
+        net.train()
         for img, label in tqdm(train_loader):
-            img, label = img.to(device), label.to(device)
-            pre_label = net(img)
-            print(label.shape, pre_label.shape)
-            loss = loss_fn(pre_label, label)
-            print(loss.item())
+            with torch.amp.autocast(device_type=str(device), dtype=torch.float16):
+                img, label = img.to(device), label.to(device)
+                pre_label = net(img)
+                loss = loss_fn(pre_label, label)
+                train_loss += loss.item()
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-
-
-
-    # for img, label in dataloader:
-    #     print(img.shape, label.shape)
-    #     img = img.to(device)
-    #     label = label.to(device)
-    #     pre_label = net(img)
-    #     print(pre_label.shape)
-    #     return
-
-
+        net.eval()
+        for img, label in tqdm(val_loader):
+            with torch.autocast(device_type=str(device), dtype=torch.float16):
+                img, label = img.to(device), label.to(device)
+                pre_label = net(img)
+                loss = loss_fn(pre_label, label)
+                val_loss += loss.item()
 
 
 if __name__ == '__main__':
