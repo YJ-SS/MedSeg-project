@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union, Sequence
 
 from monai.networks.nets import ResNet, ResNetBlock
@@ -12,6 +13,7 @@ from monai.transforms import Compose, Resized, Resize, apply_transform, ToTensor
 from age_embed_dataset import myDataset
 from torch.utils.data import DataLoader
 import numpy as np
+import logging
 from tqdm import tqdm
 
 def get_CT_data(root_path, get_num=160):
@@ -102,6 +104,15 @@ def split_train_and_val(
 
 
 def train():
+    # Initialize log file
+    logging.basicConfig(
+        filename="test_age_classification.log",
+        level=logging.DEBUG,  # 设置日志级别
+        format='%(asctime)s %(levelname)s: %(message)s',
+        datefmt='%Y-%m-%d %H:%M'  # 日志格式
+    )
+    training_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     img_path_list_2y, label_list_2y = get_CT_data("E:\\DataSet\\brainsegNew\\ct_brain\\2y")
     img_path_list_3y, label_list_3y = get_CT_data("E:\\DataSet\\brainsegNew\\ct_brain\\3y")
     img_path_list_4y, label_list_4y = get_CT_data("E:\\DataSet\\brainsegNew\\ct_brain\\4y")
@@ -110,7 +121,7 @@ def train():
     net = ResNet(
         block=ResNetBlock,
         layers=[1,1,2,2],
-        block_inplanes=[32,64,128,256],
+        block_inplanes=[16, 32,64,128],
         spatial_dims=3,
         n_input_channels=1,
         num_classes=3
@@ -141,8 +152,8 @@ def train():
     )
     val_loader = DataLoader(val_dataset, batch_size=2, shuffle=True, num_workers=8, prefetch_factor=16)
     loss_fn = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, weight_decay=1e-7)
-    for epoch in range(200):
+    optimizer = torch.optim.Adam(net.parameters(), lr=1e-3, weight_decay=1e-7)
+    for epoch in range(500):
         train_loss = 0.
         train_acc_cnt = 0
         train_total_cnt = 0
@@ -174,6 +185,17 @@ def train():
                     val_loss += loss.item()
                     val_acc_cnt += get_acc_count(pre_label, label)
                     val_total_cnt += len(label)
+
+        epoch_log_content = "EPOCH={0} train_loss={1} train_acc = {2} "\
+                            "val_loss = {3} val_acc = {4}".format(
+            epoch,
+            train_loss / len(train_loader),
+            train_acc_cnt / train_total_cnt,
+            val_loss / len(val_loader),
+            val_acc_cnt / val_total_cnt
+        )
+        log_print("CRITICAL", epoch_log_content)
+        logging.info(training_stamp + " " + epoch_log_content)
 
 
 
