@@ -42,6 +42,6 @@
     "log_stamp_str": " seg cranial"
   },
   "validation_info_config": {
-    "model_para_file_name": "dual_MBConv_VAE checkpoint69.pth"
+    "model_para_file_name": "dual_MBConv_VAE checkpoint54.pth"
   }
 }
