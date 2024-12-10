@@ -218,12 +218,23 @@ class MBConvNet(nn.Module):
             ).to(device),
         )
 
-    def reparameterize(self, mu, logvar):
+    def reparameterize(self, mu, logvar, is_train):
+        '''
+        在进行训练时引入特征级别噪音
+        在验证时不引入噪音
+        :param mu:
+        :param logvar:
+        :param is_train:
+        :return:
+        '''
         std = torch.exp(0.5 * logvar)
-        eps = torch.rand_like(std)
-        return mu + eps * std
+        if is_train:
+            eps = torch.rand_like(std)
+            return mu + eps * std
+        else:
+            return mu + std
 
-    def forward(self, x) -> Tuple[Any, Any, Any, Any, Any]:
+    def forward(self, x, is_train=True) -> Tuple[Any, Any, Any, Any, Any]:
         self.encode_outputs = []
         for i, block in enumerate(self.encode_blocks):
             if i < len(self.encode_blocks) - 1:
@@ -238,7 +249,7 @@ class MBConvNet(nn.Module):
 
         mu = self.mu_fc(x)
         logvar = self.var_fc(x)
-        latent = self.reparameterize(mu=mu, logvar=logvar)
+        latent = self.reparameterize(mu=mu, logvar=logvar, is_train = is_train)
         x = latent
 
         self.encode_outputs.reverse()

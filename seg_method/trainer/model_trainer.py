@@ -650,7 +650,7 @@ class SimpleTrainer(object):
         model.eval()
         with torch.no_grad():
             if self.model_name == 'dual_MBConv_VAE':
-                pre_label, _, _, _, _ = model(img)
+                pre_label, _, _, _, _ = model(img, is_train=False)
             elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
                 pre_label = model(img)
         dice, dice_matrix = get_dice(y_pred=pre_label, y_true=gt, num_clus=self.model_config['num_class'])

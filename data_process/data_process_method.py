@@ -9,7 +9,7 @@ import SimpleITK as sitk
 import torch
 from monai.transforms import (Compose, Resized, Resize, apply_transform, ToTensord, ToTensor, AddChanneld, AddChannel,
                               NormalizeIntensityd, CenterSpatialCropd,
-                              RandFlipd, GibbsNoise, RandRotate90d, RandRotated, RandZoomd, ThresholdIntensityd,
+                              RandFlipd, GibbsNoise, RandCoarseDropout, RandRotated, RandZoomd, ThresholdIntensityd,
                               ScaleIntensityRanged, ScaleIntensity,
                               RandShiftIntensityd, RandAffined, Rand3DElasticd, RandGridDistortiond,
                               RandSpatialCropSamplesd)
@@ -51,7 +51,8 @@ def get_dataloader_transform(stage, resize=None):
             AddChanneld(keys=['image', 'label']),
         ]
         transform2img_list = [
-            ScaleIntensity(minv=0., maxv=1.)
+            ScaleIntensity(minv=0., maxv=1.),
+            RandCoarseDropout(prob=0.5, holes=20, spatial_size=20, fill_value=0)
         ]
         if resize is not None:
             transform2both_list.insert(
