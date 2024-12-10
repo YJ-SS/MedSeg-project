@@ -51,7 +51,6 @@ def extract_largest_connected_components_for_labels(mask_image):
 
 
 
-
 if __name__ == '__main__':
     '''
     使用路径 E:\DataSet\brainsegNew\CT_0_2996\2y\BCH_02934 下的不使用 cutmix 训练的 dual_MBConv_VAE 训练的结果进行后处理测试
