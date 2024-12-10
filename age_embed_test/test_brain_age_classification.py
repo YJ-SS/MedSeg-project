@@ -5,7 +5,6 @@ from monai.networks.nets import ResNet, ResNetBlock
 import torch
 import os
 
-from torch import dtype
 
 from seg_method.train_process.record_func import log_print
 import SimpleITK as sitk
