@@ -458,11 +458,12 @@ class SimpleTrainer(object):
         :return:
         '''
         seg_loss_fn = nn.CrossEntropyLoss(weight=self.label_weights)
-        recon_loss_fn = nn.MSELoss(reduction='none')
+        # recon_loss_fn = nn.MSELoss(reduction='none')
+        recon_loss_fn = nn.MSELoss()
 
         seg_loss = seg_loss_fn(pre_label, seg_gt.squeeze(dim=1).long())
         recon_loss = recon_loss_fn(recon_img, pre_recon)
-        recon_loss = (recon_loss * self.recon_region_weights).mean()
+        # recon_loss = (recon_loss * self.recon_region_weights).mean()
         kl_loss = KL_divergence(mu=mu, logvar=logvar)
         contrastive_loss = torch.tensor(0.0)
         if self.hyper_para_config['calcu_contras_loss']:
