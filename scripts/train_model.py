@@ -5,3 +5,4 @@ if __name__ == '__main__':
     # Trainer.train()
     # Evaluate model1
     Trainer.evaluate()
+
