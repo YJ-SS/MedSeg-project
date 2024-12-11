@@ -456,6 +456,7 @@ class SimpleTrainer(object):
         :param logvar:
         :param latent_var:
         :return:
+
         '''
         seg_loss_fn = nn.CrossEntropyLoss(weight=self.label_weights)
         # recon_loss_fn = nn.MSELoss(reduction='none')
