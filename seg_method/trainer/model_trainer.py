@@ -28,6 +28,7 @@ import torch.nn as nn
 from datetime import datetime
 from monai.networks.nets import UNet, SwinUNETR
 from train_process.early_stop import EarlyStopping
+from dual_multi_scale_VAE import MultiScaleNet
 warnings.filterwarnings("ignore")
 
 
@@ -189,6 +190,13 @@ class SimpleTrainer(object):
                 feature_size=self.model_config['feature_size'],
                 depths=self.model_config['depths'],
                 num_heads=self.model_config['num_heads']
+            ).to(self.device)
+        elif self.model_name == 'dual_multi_scale_VAE':
+            self.net = MultiScaleNet(
+                in_channel=self.model_config['in_channel'],
+                num_class=self.model_config['num_class'],
+                channel_list=self.model_config['channel_list'],
+                device=torch.device(self.device),
             ).to(self.device)
         else:
             log_print("ERROR", "Model {0} has not been supported!!!".format(self.model_name))
@@ -598,7 +606,7 @@ class SimpleTrainer(object):
                 log_print("INFO", "Checkpoint saved!!!")
 
     def train(self):
-        if self.model_name == 'dual_MBConv_VAE' or self.model_name == 'dual_transformer_VAE':
+        if self.model_name == 'dual_MBConv_VAE' or self.model_name == 'dual_transformer_VAE' or self.model_name == 'dual_multi_scale_VAE':
             self.train_dual_VAE_()
         elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
             self.train_normal_Net_()
@@ -651,7 +659,7 @@ class SimpleTrainer(object):
         log_print("INFO", "Validation: Image shape={0}, GT shape={1}".format(img.shape, gt.shape))
         model.eval()
         with torch.no_grad():
-            if self.model_name == 'dual_MBConv_VAE':
+            if self.model_name == 'dual_MBConv_VAE' or self.model_name == 'dual_transformer_VAE' or self.model_name == 'dual_multi_scale_VAE':
                 pre_label, _, _, _, _ = model(img, is_train=False)
             elif self.model_name == 'monai_3D_unet' or self.model_name == 'SwinUNETR':
                 pre_label = model(img)

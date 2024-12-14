@@ -5,6 +5,7 @@ sys.path.append("..")
 import torch
 import torch.nn as nn
 from multi_scale_conv import MultiScaleConv3D
+from monai.networks.blocks import TransformerBlock
 
 class MultiScaleNet(nn.Module):
     def __init__(
@@ -17,6 +18,7 @@ class MultiScaleNet(nn.Module):
         super(MultiScaleNet, self).__init__()
         self.encode_blocks = []
         self.decode_blocks = []
+        self.skip_conv_blocks = []
         self.encode_outputs = []
         self.down_sample = nn.MaxPool3d(kernel_size=2, stride=2, padding=0).to(device)
         self.up_sample = nn.Upsample(scale_factor=2, mode='trilinear').to(device)
@@ -77,6 +79,28 @@ class MultiScaleNet(nn.Module):
         for i, block in enumerate(self.decode_blocks):
             self.add_module('decode block{0}'.format(i), block)
 
+        for i in range(len(channel_list) - 1):
+            self.skip_conv_blocks.append(
+                nn.Sequential(
+                    nn.Conv3d(
+                        in_channels=channel_list[i],
+                        out_channels=channel_list[i],
+                        kernel_size=1,
+                        stride=1,
+                        padding=0
+                    )
+                )
+            )
+        # 反转卷积顺序
+        self.skip_conv_blocks.reverse()
+        for i, block in enumerate(self.skip_conv_blocks):
+            self.add_module('skip conv block{0}'.format(i), block)
+
+        self.transformer_block = TransformerBlock(
+            hidden_size=channel_list[-1],
+            mlp_dim=channel_list[-1],
+            num_heads=8
+        )
         self.mu_conv = MultiScaleConv3D(
             in_channels=channel_list[-1],
             out_channels=channel_list[-1]
@@ -136,16 +160,22 @@ class MultiScaleNet(nn.Module):
         mu = self.mu_conv(x)
         logvar = self.var_conv(x)
         latent = self.reparameterize(mu, logvar, is_train)
-        x = latent
+        B, C, D, H, W = latent.shape
+        latent_reshaped = latent.permute(0, 2, 3, 4, 1).view(B, -1, C)
+        latent_reshaped = self.transformer_block(latent_reshaped)
+        # print("latent reshaped: ", latent_reshaped.shape)
+        x = latent_reshaped.view(B, D, H, W, C).permute(0, 4, 1, 2, 3)
+        # print("x shape: ", x.shape)
 
         self.encode_outputs.reverse()
-
         for i, block in enumerate(self.decode_blocks):
             if i == 0:
                 x = block(x)
             else:
                 x = self.up_sample(x)
-                x = torch.concat([self.encode_outputs[i - 1], x], dim = 1)
+                # print(self.encode_outputs[i - 1].shape)
+                encode_output = self.skip_conv_blocks[i - 1](self.encode_outputs[i - 1])
+                x = torch.concat([encode_output, x], dim = 1)
                 x = block(x)
         pre_seg = self.seg_head(x)
         recon = self.recon_head(x)
@@ -160,23 +190,6 @@ if __name__ == '__main__':
         num_class=5,
         channel_list=[16, 32, 64, 128],
         device=device
-    )
+    ).to(device)
     pre_seg, recon, mu, logvar, latent = net(x)
     print(pre_seg.shape, recon.shape, mu.shape, logvar.shape, latent.shape)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -154,13 +154,17 @@ if __name__ == '__main__':
     '''
     使用路径 E:\DataSet\brainsegNew\CT_0_2996\2y\BCH_02934 下的不使用 cutmix 训练的 dual_MBConv_VAE 训练的结果进行后处理测试
     '''
-    img_path = "./test_data/Brain_w_bone_cropped.nii.gz"
-    mask_path = "./test_data/dual_MBConv_VAE cranial pre_mask 2024-12-09.nii.gz"
+    # img_path = "./test_data/Brain_w_bone_cropped.nii.gz"
+    # mask_path = "./test_data/dual_MBConv_VAE cranial pre_mask 2024-12-09.nii.gz"
+    img_path = "E:\\DataSet\\brainsegNew\\CT_0_2996\\2y\\BCH_02933\\Brain_w_bone_cropped.nii.gz"
+    mask_path = "E:\\DataSet\\brainsegNew\\CT_0_2996\\2y\\BCH_02933\\dual_MBConv_VAE cranial pre_mask 2024-12-12.nii.gz"
     img = sitk.ReadImage(img_path)
     mask = sitk.ReadImage(mask_path)
     largest_component_mask = extract_largest_connected_components_for_labels(mask)
-    sitk.WriteImage(largest_component_mask, "./test_data/largest_component_mask.nii.gz")
+    # sitk.WriteImage(largest_component_mask, "./test_data/largest_component_mask.nii.gz")
+    sitk.WriteImage(largest_component_mask, "C:\\Users\\Administrator\\Desktop\\largest_component_mask.nii.gz")
     print("largest_component_mask saved!")
     largest_component_fill_holes_mask = fill_holes_per_label(largest_component_mask, img)
-    sitk.WriteImage(largest_component_fill_holes_mask, "./test_data/largest_component_fill_holes_mask.nii.gz")
+    # sitk.WriteImage(largest_component_fill_holes_mask, "./test_data/largest_component_fill_holes_mask.nii.gz")
+    sitk.WriteImage(largest_component_fill_holes_mask, "C:\\Users\\Administrator\\Desktop\\largest_component_fill_holes_mask.nii.gz")
     print("largest_component_fill_holes_mask saved!")

@@ -1,6 +1,6 @@
 {
   "model_config": {
-    "model_name" : "dual_MBConv_VAE",
+    "model_name" : "dual_multi_scale_VAE",
     "in_channel" : 1,
     "num_class" : 6,
     "residual" : true,
@@ -8,20 +8,20 @@
     "channel_list": [16, 32, 64, 128]
   },
   "hyper_para_config":{
-    "epoch": 100,
+    "epoch": 200,
     "decay": 1e-8,
     "label_mapping": true,
     "label_discard_list": null,
     "label_merge_list": null,
-    "lr" : 1e-4,
+    "lr" : 3e-4,
     "cutmix" : false,
     "save_checkpoint_per_epoch": 5,
     "patience": 30,
     "recon_img_get_num": null,
     "seg_weight": 1.0,
-    "recon_weight": 1e-2,
-    "kl_weight": 1e-5,
-    "calcu_contras_loss": true,
+    "recon_weight": 3e-2,
+    "kl_weight": 1e-4,
+    "calcu_contras_loss": false,
     "contras_weight": 1e-5,
     "region_retain_weight": 0.9,
     "data_resolution": [329, 335, 202],
@@ -37,11 +37,11 @@
     "dataset_name": "cranial",
     "dataset_num_class": 4,
     "dataset_root_path": "E:\\DataSet\\brainsegNew\\CT_0_2996\\2y",
-    "log_save_path": "../training_record/log/train_dual_MBConv_VAE.log",
+    "log_save_path": "../training_record/log/train_dual_multi_scale_VAE.log",
     "model_para_save_path": "../training_record/model_para",
     "log_stamp_str": " seg cranial"
   },
   "validation_info_config": {
-    "model_para_file_name": "dual_MBConv_VAE best.pth"
+    "model_para_file_name": "dual_multi_scale_VAE checkpoint99.pth"
   }
 }
